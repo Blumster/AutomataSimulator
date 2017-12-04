@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automata", "Automata\Automata.csproj", "{BA5FB3D8-5936-4C87-8449-8514ED58305A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automata.Simulator", "Automata.Simulator\Automata.Simulator.csproj", "{B0FBDE10-1C72-4552-B575-A73FA0E2FE57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA5FB3D8-5936-4C87-8449-8514ED58305A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA5FB3D8-5936-4C87-8449-8514ED58305A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA5FB3D8-5936-4C87-8449-8514ED58305A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA5FB3D8-5936-4C87-8449-8514ED58305A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0FBDE10-1C72-4552-B575-A73FA0E2FE57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0FBDE10-1C72-4552-B575-A73FA0E2FE57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0FBDE10-1C72-4552-B575-A73FA0E2FE57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0FBDE10-1C72-4552-B575-A73FA0E2FE57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ACDE5A55-67C3-40CA-BED2-ED79E05CAF7A}
+	EndGlobalSection
+EndGlobal
