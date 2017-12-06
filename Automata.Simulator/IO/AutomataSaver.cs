@@ -10,9 +10,9 @@ namespace Automata.Simulator.IO
 
     public static class AutomataSaver
     {
-        public static void Save(string path, AutomataGraph graph)
+        public static bool Save(string path, AutomataGraph graph)
         {
-
+            return true;
         }
     }
 }

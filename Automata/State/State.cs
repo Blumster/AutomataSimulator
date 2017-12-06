@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Automata.State
@@ -9,7 +10,11 @@ namespace Automata.State
     [DebuggerDisplay("Állapot: {Id}")]
     public class State : IState
     {
-        public string Id { get; set; }
+        #region Fields
+        private string _id;
+        #endregion
+
+        #region Properties
         public IAutomata Automata { get; set; }
         public bool IsStartState { get; set; }
         public bool IsAcceptState { get; set; }
@@ -38,15 +43,31 @@ namespace Automata.State
             }
         }
 
+        public string Id
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                _id = value ?? throw new ArgumentNullException("Id", "The state's id can not be null!");
+            }
+        }
+        #endregion
+
+        #region Constructors
         public State(string id)
         {
             Id = id;
         }
+        #endregion
 
+        #region Overrides
         public override bool Equals(object obj)
         {
-            if (obj is State)
-                return Equals(obj as State);
+            if (obj is State state)
+                return Equals(state);
 
             return false;
         }
@@ -68,5 +89,6 @@ namespace Automata.State
         {
             return Id;
         }
+        #endregion
     }
 }

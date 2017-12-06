@@ -10,8 +10,8 @@ namespace Automata.Transition
 
     public class PushdownTransition : SimpleTransition
     {
-        public PushdownTransition(State source, State target)
-            : base(source, target)
+        public PushdownTransition(State source, State target, object[] symbols)
+            : base(source, target, symbols)
         {
 
         }

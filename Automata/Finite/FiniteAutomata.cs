@@ -8,60 +8,142 @@ namespace Automata.Finite
     using State;
     using Transition;
 
-    public abstract class FiniteAutomata : IAutomata
+    public enum AutomataType : byte
     {
+        Deterministic = 0,
+        Nondeterministic = 1,
+        Pushdown = 2
+    }
+
+    public class FiniteAutomata : IAutomata
+    {
+        #region Properties
         public IAlphabet Alphabet { get; }
         public ISet<IState> States { get; } = new HashSet<IState>();
         public ISet<IStateTransition> Transitions { get; } = new HashSet<IStateTransition>();
+        public bool IsDeterministic
+        {
+            get
+            {
+                return IsDeterministicAutomata();
+            }
+        }
+        #endregion
 
+        #region Events
         public event StateDelegate OnStateAdd;
-        public event StateDelegate OnStateDelete;
+        public event StateDelegate OnStateRemove;
         public event TransitionDelegate OnTransitionAdd;
-        public event TransitionDelegate OnTransitionDelete;
+        public event TransitionDelegate OnTransitionRemove;
+        #endregion
 
-        public abstract bool CanAddTransition(IStateTransition transition);
 
+        #region Constructors
         public FiniteAutomata(IAlphabet alphabet)
         {
-            Alphabet = alphabet;
+            Alphabet = alphabet ?? throw new ArgumentNullException(nameof(alphabet), "The state id can not be null!");
         }
 
         public FiniteAutomata(IAlphabet alphabet, IEnumerable<IState> states, IState startState, IEnumerable<IStateTransition> transitions, IEnumerable<IState> acceptingStates)
         {
-            Alphabet = alphabet;
+            if (states == null)
+                throw new ArgumentNullException(nameof(states), "The state list can not be null!");
+
+            if (startState == null)
+                throw new ArgumentNullException(nameof(startState), "The start state can not be null!");
+
+            if (transitions == null)
+                throw new ArgumentNullException(nameof(transitions), "The transition list can not be null!");
+
+            if (acceptingStates == null)
+                throw new ArgumentNullException(nameof(acceptingStates), "The accepting state list can not be null!");
+
+            Alphabet = alphabet ?? throw new ArgumentNullException(nameof(alphabet), "The alphabet can not be null!");
 
             startState.IsStartState = true;
 
             States.UnionWith(states);
+            States.Add(startState);
 
             foreach (var state in acceptingStates)
                 state.IsAcceptState = true;
 
             Transitions.UnionWith(transitions);
         }
+        #endregion
+
+        #region Interface
+        #region State
+        public IState GetState(string stateId)
+        {
+            if (stateId == null)
+                throw new ArgumentNullException(nameof(stateId), "The state id can not be null!");
+
+            foreach (var state in States)
+                if (state.Id.Equals(stateId))
+                    return state;
+
+            return null;
+        }
 
         public IState GetOrCreateState(string stateId, bool isStartState = false, bool isAcceptState = false)
         {
-            foreach (var state in States)
+            if (stateId == null)
+                throw new ArgumentNullException(nameof(stateId), "The state id can not be null!");
+
+            var state = GetState(stateId);
+            if (state == null)
             {
-                if (state.Id.Equals(stateId))
-                    return state;
+                state = InstantiateState(stateId, isStartState, isAcceptState);
+
+                States.Add(state);
+
+                OnStateAdd?.Invoke(this, new StateEventArgs(state));
             }
 
-            var newState = new State(stateId)
-            {
-                IsStartState = isStartState,
-                IsAcceptState = isAcceptState
-            };
-
-            States.Add(newState);
-
-            OnStateAdd?.Invoke(this, new StateEventArgs(newState));
-
-            return newState;
+            return state;
         }
 
-        public IStateTransition CreateTransition(string sourceId, string targetId, string label = null)
+        public void RemoveState(string stateId)
+        {
+            if (stateId == null)
+                throw new ArgumentNullException(nameof(stateId), "The state id can not be null!");
+
+            var state = GetState(stateId);
+            if (state != null)
+                RemoveState(state);
+        }
+
+        public void RemoveState(IState state)
+        {
+            if (state == null)
+                throw new ArgumentNullException(nameof(state), "The state can not be null!");
+
+            if (States.Remove(state))
+                OnStateRemove?.Invoke(this, new StateEventArgs(state));
+        }
+        #endregion
+
+        #region Transition
+        public IEnumerable<IStateTransition> GetTransitions(IState state, TransitionType type)
+        {
+            if (state == null)
+                throw new ArgumentNullException(nameof(state), "The state can not be null!");
+
+            var ret = new List<IStateTransition>();
+
+            foreach (var transition in Transitions)
+            {
+                if ((type == TransitionType.Out || type == TransitionType.Self) && transition.SourceState == state)
+                    ret.Add(transition);
+                else if (type == TransitionType.In && transition.TargetState == state)
+                    ret.Add(transition);
+            }
+
+            return ret;
+        }
+
+        public IStateTransition CreateTransition(string sourceId, string targetId, params object[] symbols)
         {
             if (sourceId == null)
                 throw new ArgumentNullException(nameof(sourceId), "The transition source id can not be null!");
@@ -69,24 +151,54 @@ namespace Automata.Finite
             if (targetId == null)
                 throw new ArgumentNullException(nameof(targetId), "The transition target id can not be null!");
 
+            var transition = InstantiateTransition(sourceId, targetId, symbols);
+
+            Transitions.Add(transition);
+
+            OnTransitionAdd?.Invoke(this, new TransitionEventArgs(transition));
+
+            return transition;
+        }
+
+        public void RemoveTrasition(IStateTransition transition)
+        {
+            if (transition == null)
+                throw new ArgumentNullException(nameof(transition), "The transition can not be null!");
+
+            if (Transitions.Remove(transition))
+                OnTransitionRemove?.Invoke(this, new TransitionEventArgs(transition));
+        }
+        #endregion
+        #endregion
+
+        #region Virtual
+        protected virtual IState InstantiateState(string stateId, bool isStartState = false, bool isAcceptState = false)
+        {
+            return new State(stateId)
+            {
+                IsStartState = isStartState,
+                IsAcceptState = isAcceptState,
+                Automata = this
+            };
+        }
+
+        protected virtual IStateTransition InstantiateTransition(string sourceId, string targetId, object[] symbols)
+        {
             var sourceState = GetOrCreateState(sourceId);
             var targetState = GetOrCreateState(targetId);
 
-            var newTransition = new SimpleTransition(sourceState, targetState)
+            return new SimpleTransition(sourceState, targetState, symbols)
             {
-                Label = label
+                Automata = this
             };
-
-            Transitions.Add(newTransition);
-
-            OnTransitionAdd?.Invoke(this, new TransitionEventArgs(newTransition));
-
-            return newTransition;
         }
+        #endregion
 
-        public IEnumerable<IStateTransition> GetTransitions(IState state, TransitionType type)
+        #region Methods
+        private bool IsDeterministicAutomata()
         {
-            throw new NotImplementedException();
+            return true;
         }
+        #endregion
     }
 }

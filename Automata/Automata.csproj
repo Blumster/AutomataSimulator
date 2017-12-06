@@ -40,27 +40,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Alphabet\SymbolAlphabet.cs" />
+    <Compile Include="Alphabet\CharacterAlphabet.cs" />
     <Compile Include="Event\StateDelegate.cs" />
     <Compile Include="Event\StateEventArgs.cs" />
     <Compile Include="Event\TransitionDelegate.cs" />
     <Compile Include="Event\TransitionEventArg.cs" />
-    <Compile Include="Finite\DeterministicFiniteAutomata.cs" />
     <Compile Include="Finite\FiniteAutomata.cs" />
     <Compile Include="Interface\IAlphabet.cs" />
     <Compile Include="Interface\IAutomata.cs" />
     <Compile Include="Interface\ISteppableAutomata.cs" />
-    <Compile Include="Finite\NondeterministicFiniteAutomata.cs" />
     <Compile Include="Interface\IStateTransition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interface\IState.cs" />
+    <Compile Include="Pushdown\PushdownAutomata.cs" />
     <Compile Include="State\State.cs" />
     <Compile Include="Transition\PushdownTransition.cs" />
     <Compile Include="Transition\SimpleTransition.cs" />
     <Compile Include="Transition\TransitionType.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pushdown\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

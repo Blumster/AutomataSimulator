@@ -11,41 +11,131 @@ using MsaglPoint = Microsoft.Msagl.Core.Geometry.Point;
 
 namespace Automata.Simulator.Drawing
 {
+    using Event;
     using Interface;
 
     public class AutomataGraph : Graph
     {
+        #region Static fields
         private static FieldInfo SegmentsFieldInfo = null;
+        #endregion
 
-        public IAutomata Automata { get; }
-        public bool IsSaved { get; set; }
-        public double OriginalScale { get; private set; } = double.NaN;
+        #region Fields
+        private IAutomata _automata;
+        #endregion
 
+        #region Events
         public event Action OnRedraw;
+        #endregion
 
+        #region Properties
+        public bool IsSaved { get; set; }
+
+        public IAutomata Automata
+        {
+            get
+            {
+                return _automata;
+            }
+            set
+            {
+                if (_automata != null)
+                {
+                    TeardownGraph();
+                    TeardownEvents();
+                }
+
+                _automata = value;
+
+                SetupEvents();
+                SetupGraph();
+            }
+        }
+        #endregion
+
+
+        #region Constructor
         public AutomataGraph(IAutomata automata)
         {
-            Automata = automata;
-
-            SetupEvents();
-            BuildGraph();
+            Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
         }
+        #endregion
 
+        #region Event handling
         private void SetupEvents()
         {
-            Automata.OnStateAdd += (o, args) => AddState(args.State);
-            Automata.OnStateDelete += (o, args) => RemoveState(args.State);
-            Automata.OnTransitionAdd += (o, args) => AddTransition(args.Transition);
-            Automata.OnTransitionDelete += (o, args) => RemoveTransition(args.Transition);
+            Automata.OnStateAdd += OnStateAdd;
+            Automata.OnStateRemove += OnStateRemove;
+            Automata.OnTransitionAdd += OnTransitionAdd;
+            Automata.OnTransitionRemove += OnTransitionRemove;
         }
 
-        private void BuildGraph()
+        private void TeardownEvents()
+        {
+            Automata.OnStateAdd -= OnStateAdd;
+            Automata.OnStateRemove -= OnStateRemove;
+            Automata.OnTransitionAdd -= OnTransitionAdd;
+            Automata.OnTransitionRemove -= OnTransitionRemove;
+        }
+
+        private void OnStateAdd(object sender, StateEventArgs args)
+        {
+            AddState(args.State);
+        }
+
+        private void OnStateRemove(object sender, StateEventArgs args)
+        {
+            RemoveState(args.State);
+        }
+
+        private void OnTransitionAdd(object sender, TransitionEventArgs args)
+        {
+            AddTransition(args.Transition);
+        }
+
+        private void OnTransitionRemove(object sender, TransitionEventArgs args)
+        {
+            RemoveTransition(args.Transition);
+        }
+        #endregion
+
+        #region Simulation
+        public void StartSimulation()
+        {
+
+        }
+
+        public void EndSimulation()
+        {
+
+        }
+        #endregion
+
+        #region Drawing
+        private void SetupGraph()
         {
             foreach (var logicState in Automata.States)
                 AddState(logicState);
 
             foreach (var logicTransition in Automata.Transitions)
                 AddTransition(logicTransition);
+        }
+
+        private void TeardownGraph()
+        {
+            foreach (var logicState in Automata.States)
+                RemoveState(logicState);
+
+            foreach (var logicTransition in Automata.Transitions)
+                RemoveTransition(logicTransition);
+
+            if (NodeCount > 0 || EdgeCount > 0)
+                throw new Exception("The automata graph is in an invalid state!");
+        }
+
+        public void Redraw()
+        {
+            OnRedraw?.Invoke();
         }
 
         private void AddState(IState state)
@@ -74,8 +164,7 @@ namespace Automata.Simulator.Drawing
             if (state == null)
                 throw new ArgumentNullException(nameof(state), "The logic state can not be null!");
 
-            var drawingState = NodeMap[state.Id] as State;
-            if (drawingState != null)
+            if (NodeMap[state.Id] is State drawingState)
             {
                 RemoveNode(drawingState);
 
@@ -95,6 +184,8 @@ namespace Automata.Simulator.Drawing
 
             AddPrecalculatedEdge(new Edge(sourceState, targetState, transition));
 
+            IsSaved = false;
+
             Redraw();
         }
 
@@ -107,12 +198,11 @@ namespace Automata.Simulator.Drawing
                     edgeToRemove = edge as Edge;
 
             if (edgeToRemove != null)
-                RemoveEdge(edgeToRemove);
-        }
+            {
+                IsSaved = false;
 
-        public void Redraw()
-        {
-            OnRedraw?.Invoke();
+                RemoveEdge(edgeToRemove);
+            }
         }
 
         private bool DrawNode(Node node, object graphics)
@@ -126,8 +216,8 @@ namespace Automata.Simulator.Drawing
             state.Attr.Shape = Shape.DrawFromGeometry;
             state.Attr.LineWidth = 0.7;
 
-            Curve curve = new Curve();
-            
+            var curve = new Curve();
+
             var center = state.GeometryNode.BoundaryCurve.BoundingBox.Center;
 
             if (state.IsAcceptState)
@@ -148,7 +238,9 @@ namespace Automata.Simulator.Drawing
 
             return false;
         }
+        #endregion
 
+        #region Helpers
         private static void AddDiscontinousSegment(Curve container, ICurve curve)
         {
             if (SegmentsFieldInfo == null)
@@ -185,7 +277,7 @@ namespace Automata.Simulator.Drawing
         private static IList<ICurve> GetSegmentsField(ICurve curve)
         {
             if (SegmentsFieldInfo == null)
-                throw new Exception("The program was unable to mine out the segs field!");
+                throw new Exception("The program was unable to mine out the \"segs\" field!");
 
             var segments = SegmentsFieldInfo.GetValue(curve) as IList<ICurve>;
             if (segments == null)
@@ -193,5 +285,6 @@ namespace Automata.Simulator.Drawing
 
             return segments;
         }
+        #endregion
     }
 }

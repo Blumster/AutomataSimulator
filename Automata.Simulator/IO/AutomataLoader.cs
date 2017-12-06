@@ -14,22 +14,22 @@ namespace Automata.Simulator.IO
     {
         public static AutomataGraph Load(string path)
         {
-            var automata = new DeterministicFiniteAutomata(SymbolAlphabet.Create("abc"));
+            var automata = new FiniteAutomata(new CharacterAlphabet("abc"));
 
             var aState = automata.GetOrCreateState("A", true);
             var bState = automata.GetOrCreateState("B");
             var cState = automata.GetOrCreateState("C");
             var dState = automata.GetOrCreateState("D", isAcceptState: true);
 
-            automata.CreateTransition("A", "B", "a");
-            automata.CreateTransition("A", "A", "b,c");
-            automata.CreateTransition("B", "B", "a");
-            automata.CreateTransition("B", "C", "b");
-            automata.CreateTransition("B", "A", "c");
-            automata.CreateTransition("C", "B", "a");
-            automata.CreateTransition("C", "A", "b");
-            automata.CreateTransition("C", "D", "c");
-            automata.CreateTransition("D", "D", "a,b,c");
+            automata.CreateTransition("A", "B", 'a');
+            automata.CreateTransition("A", "A", 'b', 'c');
+            automata.CreateTransition("B", "B", 'a');
+            automata.CreateTransition("B", "C", 'b');
+            automata.CreateTransition("B", "A", 'c');
+            automata.CreateTransition("C", "B", 'a');
+            automata.CreateTransition("C", "A", 'b');
+            automata.CreateTransition("C", "D", 'c');
+            automata.CreateTransition("D", "D", 'a', 'b', 'c');
 
             try
             {

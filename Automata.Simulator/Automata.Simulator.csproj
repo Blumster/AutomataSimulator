@@ -54,20 +54,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form\CreateAutomataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\CreateAutomataForm.Designer.cs">
+      <DependentUpon>CreateAutomataForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Drawing\AutomataGraph.cs" />
     <Compile Include="Drawing\Edge.cs" />
     <Compile Include="Drawing\State.cs" />
-    <Compile Include="MainWindow.cs">
+    <Compile Include="Form\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainWindow.Designer.cs">
+    <Compile Include="Form\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="IO\AutomataLoader.cs" />
     <Compile Include="IO\AutomataSaver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="MainWindow.resx">
+    <EmbeddedResource Include="Form\CreateAutomataForm.resx">
+      <DependentUpon>CreateAutomataForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

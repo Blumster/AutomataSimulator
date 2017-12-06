@@ -2,6 +2,7 @@
 {
     public interface IAlphabet
     {
-        bool IsCharacterInside(char symbol);
+        bool ContainsSymbol(object symbol);
+        string ConstructLabel(object[] symbols);
     }
 }

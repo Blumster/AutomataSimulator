@@ -12,12 +12,16 @@ namespace Automata.Interface
         ISet<IStateTransition> Transitions { get; }
 
         event StateDelegate OnStateAdd;
-        event StateDelegate OnStateDelete;
+        event StateDelegate OnStateRemove;
         event TransitionDelegate OnTransitionAdd;
-        event TransitionDelegate OnTransitionDelete;
+        event TransitionDelegate OnTransitionRemove;
 
+        IState GetState(string stateId);
         IState GetOrCreateState(string stateId, bool isStartState = false, bool isAcceptState = false);
-        IStateTransition CreateTransition(string sourceId, string targetId, string label = null);
+        void RemoveState(string stateId);
+
+        IStateTransition CreateTransition(string sourceId, string targetId, params object[] symbols);
         IEnumerable<IStateTransition> GetTransitions(IState state, TransitionType type);
+        void RemoveTrasition(IStateTransition transition);
     }
 }
