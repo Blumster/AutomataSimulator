@@ -5,7 +5,7 @@ namespace Automata.Transition
 {
     using Interface;
 
-    [DebuggerDisplay("{Source.Id} -> {Target.Id}")]
+    [DebuggerDisplay("{SourceState.Id} -> {TargetState.Id} ({Label})")]
     public class SimpleTransition : IStateTransition
     {
         public IAutomata Automata { get; set; }
@@ -13,11 +13,11 @@ namespace Automata.Transition
         public IState TargetState { get; }
         public object[] Symbols { get; }
 
-        public string Label
+        public virtual string Label
         {
             get
             {
-                return Automata.Alphabet.ConstructLabel(Symbols);
+                return Automata.Alphabet.ConstructSymbolText(Symbols);
             }
         }
 

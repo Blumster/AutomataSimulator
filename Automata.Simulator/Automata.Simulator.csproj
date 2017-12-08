@@ -69,6 +69,30 @@
     <Compile Include="Form\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\DeleteStateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\DeleteStateForm.Designer.cs">
+      <DependentUpon>DeleteStateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\DeleteTransitionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\DeleteTransitionForm.Designer.cs">
+      <DependentUpon>DeleteTransitionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\NewTransitionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\NewTransitionForm.Designer.cs">
+      <DependentUpon>NewTransitionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\NewStateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\NewStateForm.Designer.cs">
+      <DependentUpon>NewStateForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="IO\AutomataLoader.cs" />
     <Compile Include="IO\AutomataSaver.cs" />
     <Compile Include="Program.cs" />
@@ -79,6 +103,18 @@
     <EmbeddedResource Include="Form\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\DeleteStateForm.resx">
+      <DependentUpon>DeleteStateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\DeleteTransitionForm.resx">
+      <DependentUpon>DeleteTransitionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\NewTransitionForm.resx">
+      <DependentUpon>NewTransitionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\NewStateForm.resx">
+      <DependentUpon>NewStateForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

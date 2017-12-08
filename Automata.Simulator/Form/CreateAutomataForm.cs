@@ -28,10 +28,10 @@ namespace Automata.Simulator.Form
         public IAutomata CreateAutomata()
         {
             if (FiniteAutomata.Equals(TypeComboBox.SelectedItem))
-                return new FiniteAutomata(new CharacterAlphabet(AlphabetTextBox.Text));
+                return new FiniteAutomata(new CharacterAlphabet(AlphabetTextBox.Text.Replace(" ", "")));
 
             if (PushdownAutomata.Equals(TypeComboBox.SelectedItem))
-                return new PushdownAutomata(new CharacterAlphabet(AlphabetTextBox.Text));
+                return new PushdownAutomata(new CharacterAlphabet(AlphabetTextBox.Text.Replace(" ", "")));
 
             return null;
         }

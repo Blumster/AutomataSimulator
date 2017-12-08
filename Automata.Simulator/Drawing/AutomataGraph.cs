@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Reflection;
 
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Drawing;
 
-using MsaglPoint = Microsoft.Msagl.Core.Geometry.Point;
+using MsaglRectangle = Microsoft.Msagl.Core.Geometry.Rectangle;
+using MsaglSize = Microsoft.Msagl.Core.DataStructures.Size;
+using DrawingEdge = Microsoft.Msagl.Drawing.Edge;
 
 namespace Automata.Simulator.Drawing
 {
@@ -16,12 +17,20 @@ namespace Automata.Simulator.Drawing
 
     public class AutomataGraph : Graph
     {
+        #region Constants
+        public const double StateLabelFontSize = 6.0D;
+        public const double EdgeLabelFontSize = 4.0D;
+        #endregion
+
         #region Static fields
         private static FieldInfo SegmentsFieldInfo = null;
         #endregion
 
         #region Fields
+        private bool _registerEvents = false;
         private IAutomata _automata;
+        private IDictionary<IState, State> _logicToDrawingStateMap = new Dictionary<IState, State>();
+        private IDictionary<IStateTransition, Edge> _logicToDrawingTransitionMap = new Dictionary<IStateTransition, Edge>();
         #endregion
 
         #region Events
@@ -30,6 +39,28 @@ namespace Automata.Simulator.Drawing
 
         #region Properties
         public bool IsSaved { get; set; }
+        public bool RegisterEvents
+        {
+            get
+            {
+                return _registerEvents;
+            }
+            set
+            {
+                if (_registerEvents && !value)
+                {
+                    TeardownEvents();
+
+                    _registerEvents = false;
+                }
+                else if (!_registerEvents && value)
+                {
+                    _registerEvents = true;
+
+                    SetupEvents();
+                }
+            }
+        }
 
         public IAutomata Automata
         {
@@ -53,34 +84,52 @@ namespace Automata.Simulator.Drawing
         }
         #endregion
 
-
         #region Constructor
-        public AutomataGraph(IAutomata automata)
+        public AutomataGraph(IAutomata automata, bool registerEvents = false)
         {
             Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
+            RegisterEvents = registerEvents;
         }
         #endregion
 
         #region Event handling
         private void SetupEvents()
         {
+            if (!RegisterEvents)
+                return;
+
             Automata.OnStateAdd += OnStateAdd;
+            Automata.OnStateUpdate += OnStateUpdate;
             Automata.OnStateRemove += OnStateRemove;
             Automata.OnTransitionAdd += OnTransitionAdd;
+            Automata.OnTransitionUpdate += OnTransitionUpdate;
             Automata.OnTransitionRemove += OnTransitionRemove;
         }
 
         private void TeardownEvents()
         {
+            if (!RegisterEvents)
+                return;
+
             Automata.OnStateAdd -= OnStateAdd;
+            Automata.OnStateUpdate -= OnStateUpdate;
             Automata.OnStateRemove -= OnStateRemove;
             Automata.OnTransitionAdd -= OnTransitionAdd;
+            Automata.OnTransitionUpdate -= OnTransitionUpdate;
             Automata.OnTransitionRemove -= OnTransitionRemove;
         }
 
         private void OnStateAdd(object sender, StateEventArgs args)
         {
             AddState(args.State);
+        }
+
+        private void OnStateUpdate(object sender, StateEventArgs args)
+        {
+            if (NodeMap[args.State.Id] is State drawingState)
+                IsSaved = false;
+
+            Redraw();
         }
 
         private void OnStateRemove(object sender, StateEventArgs args)
@@ -91,6 +140,14 @@ namespace Automata.Simulator.Drawing
         private void OnTransitionAdd(object sender, TransitionEventArgs args)
         {
             AddTransition(args.Transition);
+        }
+
+        private void OnTransitionUpdate(object sender, TransitionEventArgs args)
+        {
+            RemoveTransition(args.Transition);
+            AddTransition(args.Transition);
+
+            Redraw();
         }
 
         private void OnTransitionRemove(object sender, TransitionEventArgs args)
@@ -143,20 +200,20 @@ namespace Automata.Simulator.Drawing
             if (state == null)
                 throw new ArgumentNullException(nameof(state), "The logic state can not be null!");
 
-            var drawingState = NodeMap[state.Id] as State;
-            if (drawingState == null)
-            {
-                drawingState = new State(state)
-                {
-                    DrawNodeDelegate = DrawNode
-                };
+            if (_logicToDrawingStateMap.ContainsKey(state))
+                throw new ArgumentException("The graph already contains this state!", nameof(state));
 
-                NodeMap[state.Id] = drawingState;
+            var drawingState = new State(state);
 
-                IsSaved = false;
+            SetupState(drawingState);
 
-                Redraw();
-            }
+            _logicToDrawingStateMap.Add(state, drawingState);
+
+            NodeMap[state.Id] = drawingState;
+
+            IsSaved = false;
+
+            Redraw();
         }
 
         private void RemoveState(IState state)
@@ -164,25 +221,39 @@ namespace Automata.Simulator.Drawing
             if (state == null)
                 throw new ArgumentNullException(nameof(state), "The logic state can not be null!");
 
-            if (NodeMap[state.Id] is State drawingState)
-            {
-                RemoveNode(drawingState);
+            if (!_logicToDrawingStateMap.ContainsKey(state))
+                throw new ArgumentException("The graph doesn't contain this state!", nameof(state));
 
-                IsSaved = false;
+            RemoveNode(_logicToDrawingStateMap[state]);
 
-                Redraw();
-            }
+            _logicToDrawingStateMap.Remove(state);
+
+            IsSaved = false;
+
+            Redraw();
         }
 
         private void AddTransition(IStateTransition transition)
         {
+            if (transition == null)
+                throw new ArgumentNullException(nameof(transition), "The logic transition can not be null!");
+
+            if (_logicToDrawingTransitionMap.ContainsKey(transition))
+                throw new ArgumentException("The graph already contains this transition!", nameof(transition));
+
             var sourceState = NodeMap[transition.SourceState.Id] as State;
             var targetState = NodeMap[transition.TargetState.Id] as State;
 
             if (sourceState == null || targetState == null)
                 throw new Exception("You can not add a transition to a non-existant state!");
 
-            AddPrecalculatedEdge(new Edge(sourceState, targetState, transition));
+            var edge = new Edge(sourceState, targetState, transition);
+
+            SetupEdge(edge);
+
+            _logicToDrawingTransitionMap.Add(transition, edge);
+
+            AddPrecalculatedEdge(edge);
 
             IsSaved = false;
 
@@ -191,18 +262,31 @@ namespace Automata.Simulator.Drawing
 
         private void RemoveTransition(IStateTransition transition)
         {
-            Edge edgeToRemove = null;
+            if (transition == null)
+                throw new ArgumentNullException(nameof(transition), "The logic transition can not be null!");
 
-            foreach (var edge in Edges.Select(e => e as Edge))
-                if (edge != null && edge.LogicTransition == transition)
-                    edgeToRemove = edge as Edge;
+            if (!_logicToDrawingTransitionMap.ContainsKey(transition))
+                throw new ArgumentException("The graph doesn't contain this transition!", nameof(transition));
 
-            if (edgeToRemove != null)
-            {
-                IsSaved = false;
+            RemoveEdge(_logicToDrawingTransitionMap[transition]);
 
-                RemoveEdge(edgeToRemove);
-            }
+            _logicToDrawingTransitionMap.Remove(transition);
+
+            IsSaved = false;
+
+            Redraw();
+        }
+
+        public void SetupState(State state)
+        {
+            state.Label.FontSize = StateLabelFontSize;
+            state.DrawNodeDelegate = DrawNode;
+        }
+
+        public void SetupEdge(Edge edge)
+        {
+            edge.Label.FontSize = EdgeLabelFontSize;
+            edge.DrawEdgeDelegate = DrawEdge;
         }
 
         private bool DrawNode(Node node, object graphics)
@@ -216,6 +300,14 @@ namespace Automata.Simulator.Drawing
             state.Attr.Shape = Shape.DrawFromGeometry;
             state.Attr.LineWidth = 0.7;
 
+            if (state.IsStartState)
+            {
+                if (state.Id.Length > 2)
+                    state.Label.Width -= 6;
+                else
+                    state.Label.Width -= 5;
+            }
+
             var curve = new Curve();
 
             var center = state.GeometryNode.BoundaryCurve.BoundingBox.Center;
@@ -227,16 +319,24 @@ namespace Automata.Simulator.Drawing
 
             if (state.IsStartState)
             {
-                var triangleCenter = new MsaglPoint(center.X - 15, center.Y);
-
-                AddDiscontinousSegment(curve, CurveFactory.RotateCurveAroundCenterByDegree(CurveFactory.CreateInteriorTriangle(10, 10, triangleCenter), triangleCenter, -90));
-
-                state.Label.Text = $" {state.Id}";
+                AddDiscontinousSegment(curve, new LineSegment(center.X - 12, center.Y - 2, center.X - 10, center.Y));
+                AddDiscontinousSegment(curve, new LineSegment(center.X - 15, center.Y, center.X - 10, center.Y));
+                AddDiscontinousSegment(curve, new LineSegment(center.X - 12, center.Y + 2, center.X - 10, center.Y));
             }
 
             state.GeometryNode.BoundaryCurve = curve;
 
             return false;
+        }
+
+        private bool DrawEdge(DrawingEdge drawingEdge, object graphics)
+        {
+            return false;
+            /*if (drawingEdge is Edge edge)
+            {
+                // TODO: kell ez?
+            }
+            return false;*/
         }
         #endregion
 

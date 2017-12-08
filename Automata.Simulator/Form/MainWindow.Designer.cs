@@ -28,27 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.ManageGroupBox = new System.Windows.Forms.GroupBox();
             this.NewButton = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
             this.LoadButton = new System.Windows.Forms.Button();
-            this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
             this.loadAutomataDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveAutomataDialog = new System.Windows.Forms.SaveFileDialog();
             this.DrawPanel = new System.Windows.Forms.Panel();
             this.EditGroupBox = new System.Windows.Forms.GroupBox();
+            this.DeleteTransitionButton = new System.Windows.Forms.Button();
             this.NewStateButton = new System.Windows.Forms.Button();
             this.DeleteStateButton = new System.Windows.Forms.Button();
             this.NewTransitionButton = new System.Windows.Forms.Button();
-            this.DeleteTransitionButton = new System.Windows.Forms.Button();
             this.SimulationGroupBox = new System.Windows.Forms.GroupBox();
+            this.SimulationSpeedTrackBar = new System.Windows.Forms.TrackBar();
+            this.SimulationStepTrackBarLabel = new System.Windows.Forms.Label();
+            this.SimulationStepMethodComboBox = new System.Windows.Forms.ComboBox();
             this.StartNewSimulationButton = new System.Windows.Forms.Button();
             this.SimulationStepButton = new System.Windows.Forms.Button();
             this.StopSimulationButton = new System.Windows.Forms.Button();
-            this.SimulationStepMethodComboBox = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.SimulationSpeedTrackBar = new System.Windows.Forms.TrackBar();
+            this.SimulationSpeedDescriptionLabel = new System.Windows.Forms.Label();
+            this.SimulationSpeedLabel = new System.Windows.Forms.Label();
             this.ManageGroupBox.SuspendLayout();
             this.EditGroupBox.SuspendLayout();
             this.SimulationGroupBox.SuspendLayout();
@@ -98,45 +98,6 @@
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
-            // graphViewer
-            // 
-            this.graphViewer.ArrowheadLength = 10D;
-            this.graphViewer.AsyncLayout = false;
-            this.graphViewer.AutoScroll = true;
-            this.graphViewer.BackwardEnabled = false;
-            this.graphViewer.BuildHitTree = true;
-            this.graphViewer.CurrentLayoutMethod = Microsoft.Msagl.GraphViewerGdi.LayoutMethod.UseSettingsOfTheGraph;
-            this.graphViewer.EdgeInsertButtonVisible = false;
-            this.graphViewer.FileName = "";
-            this.graphViewer.ForwardEnabled = false;
-            this.graphViewer.Graph = null;
-            this.graphViewer.InsertingEdge = false;
-            this.graphViewer.LayoutAlgorithmSettingsButtonVisible = true;
-            this.graphViewer.LayoutEditingEnabled = true;
-            this.graphViewer.Location = new System.Drawing.Point(12, 12);
-            this.graphViewer.LooseOffsetForRouting = 0.25D;
-            this.graphViewer.MouseHitDistance = 0.05D;
-            this.graphViewer.Name = "graphViewer";
-            this.graphViewer.NavigationVisible = true;
-            this.graphViewer.NeedToCalculateLayout = true;
-            this.graphViewer.OffsetForRelaxingInRouting = 0.6D;
-            this.graphViewer.PaddingForEdgeRouting = 8D;
-            this.graphViewer.PanButtonPressed = false;
-            this.graphViewer.SaveAsImageEnabled = false;
-            this.graphViewer.SaveAsMsaglEnabled = false;
-            this.graphViewer.SaveButtonVisible = false;
-            this.graphViewer.SaveGraphButtonVisible = false;
-            this.graphViewer.SaveInVectorFormatEnabled = false;
-            this.graphViewer.Size = new System.Drawing.Size(1034, 657);
-            this.graphViewer.TabIndex = 1;
-            this.graphViewer.TightOffsetForRouting = 0.125D;
-            this.graphViewer.ToolBarIsVisible = false;
-            this.graphViewer.Transform = ((Microsoft.Msagl.Core.Geometry.Curves.PlaneTransformation)(resources.GetObject("graphViewer.Transform")));
-            this.graphViewer.UndoRedoButtonsVisible = false;
-            this.graphViewer.WindowZoomButtonPressed = false;
-            this.graphViewer.ZoomF = 1D;
-            this.graphViewer.ZoomWindowThreshold = 9999999999D;
-            // 
             // loadAutomataDialog
             // 
             this.loadAutomataDialog.Filter = "Gráfok|*.gml";
@@ -148,6 +109,9 @@
             // 
             // DrawPanel
             // 
+            this.DrawPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.DrawPanel.Location = new System.Drawing.Point(12, 12);
             this.DrawPanel.Name = "DrawPanel";
             this.DrawPanel.Size = new System.Drawing.Size(1040, 657);
@@ -166,6 +130,16 @@
             this.EditGroupBox.TabIndex = 3;
             this.EditGroupBox.TabStop = false;
             this.EditGroupBox.Text = "Szerkesztés";
+            // 
+            // DeleteTransitionButton
+            // 
+            this.DeleteTransitionButton.Location = new System.Drawing.Point(6, 106);
+            this.DeleteTransitionButton.Name = "DeleteTransitionButton";
+            this.DeleteTransitionButton.Size = new System.Drawing.Size(182, 23);
+            this.DeleteTransitionButton.TabIndex = 3;
+            this.DeleteTransitionButton.Text = "Átmenet törlése";
+            this.DeleteTransitionButton.UseVisualStyleBackColor = true;
+            this.DeleteTransitionButton.Click += new System.EventHandler(this.DeleteTransitionButton_Click);
             // 
             // NewStateButton
             // 
@@ -197,31 +171,54 @@
             this.NewTransitionButton.UseVisualStyleBackColor = true;
             this.NewTransitionButton.Click += new System.EventHandler(this.NewTransitionButton_Click);
             // 
-            // DeleteTransitionButton
-            // 
-            this.DeleteTransitionButton.Location = new System.Drawing.Point(6, 106);
-            this.DeleteTransitionButton.Name = "DeleteTransitionButton";
-            this.DeleteTransitionButton.Size = new System.Drawing.Size(182, 23);
-            this.DeleteTransitionButton.TabIndex = 3;
-            this.DeleteTransitionButton.Text = "Átmenet törlése";
-            this.DeleteTransitionButton.UseVisualStyleBackColor = true;
-            this.DeleteTransitionButton.Click += new System.EventHandler(this.DeleteTransitionButton_Click);
-            // 
             // SimulationGroupBox
             // 
             this.SimulationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SimulationGroupBox.Controls.Add(this.SimulationSpeedLabel);
+            this.SimulationGroupBox.Controls.Add(this.SimulationSpeedDescriptionLabel);
             this.SimulationGroupBox.Controls.Add(this.SimulationSpeedTrackBar);
-            this.SimulationGroupBox.Controls.Add(this.label1);
+            this.SimulationGroupBox.Controls.Add(this.SimulationStepTrackBarLabel);
             this.SimulationGroupBox.Controls.Add(this.SimulationStepMethodComboBox);
             this.SimulationGroupBox.Controls.Add(this.StartNewSimulationButton);
             this.SimulationGroupBox.Controls.Add(this.SimulationStepButton);
             this.SimulationGroupBox.Controls.Add(this.StopSimulationButton);
             this.SimulationGroupBox.Location = new System.Drawing.Point(1058, 273);
             this.SimulationGroupBox.Name = "SimulationGroupBox";
-            this.SimulationGroupBox.Size = new System.Drawing.Size(194, 216);
+            this.SimulationGroupBox.Size = new System.Drawing.Size(194, 294);
             this.SimulationGroupBox.TabIndex = 4;
             this.SimulationGroupBox.TabStop = false;
             this.SimulationGroupBox.Text = "Szimuláció";
+            // 
+            // SimulationSpeedTrackBar
+            // 
+            this.SimulationSpeedTrackBar.Location = new System.Drawing.Point(6, 150);
+            this.SimulationSpeedTrackBar.Maximum = 60;
+            this.SimulationSpeedTrackBar.Minimum = 1;
+            this.SimulationSpeedTrackBar.Name = "SimulationSpeedTrackBar";
+            this.SimulationSpeedTrackBar.Size = new System.Drawing.Size(182, 45);
+            this.SimulationSpeedTrackBar.TabIndex = 5;
+            this.SimulationSpeedTrackBar.TickFrequency = 5;
+            this.SimulationSpeedTrackBar.Value = 1;
+            this.SimulationSpeedTrackBar.Scroll += new System.EventHandler(this.SimulationSpeedTrackBar_Scroll);
+            // 
+            // SimulationStepTrackBarLabel
+            // 
+            this.SimulationStepTrackBarLabel.AutoSize = true;
+            this.SimulationStepTrackBarLabel.Location = new System.Drawing.Point(3, 86);
+            this.SimulationStepTrackBarLabel.Name = "SimulationStepTrackBarLabel";
+            this.SimulationStepTrackBarLabel.Size = new System.Drawing.Size(155, 13);
+            this.SimulationStepTrackBarLabel.TabIndex = 4;
+            this.SimulationStepTrackBarLabel.Text = "Szimuláció léptetésének módja:";
+            // 
+            // SimulationStepMethodComboBox
+            // 
+            this.SimulationStepMethodComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.SimulationStepMethodComboBox.FormattingEnabled = true;
+            this.SimulationStepMethodComboBox.Location = new System.Drawing.Point(6, 102);
+            this.SimulationStepMethodComboBox.Name = "SimulationStepMethodComboBox";
+            this.SimulationStepMethodComboBox.Size = new System.Drawing.Size(182, 21);
+            this.SimulationStepMethodComboBox.TabIndex = 3;
+            this.SimulationStepMethodComboBox.SelectedIndexChanged += new System.EventHandler(this.SimulationStepMethodComboBox_SelectedIndexChanged);
             // 
             // StartNewSimulationButton
             // 
@@ -229,13 +226,13 @@
             this.StartNewSimulationButton.Name = "StartNewSimulationButton";
             this.StartNewSimulationButton.Size = new System.Drawing.Size(182, 23);
             this.StartNewSimulationButton.TabIndex = 2;
-            this.StartNewSimulationButton.Text = "Szimláció indítása";
+            this.StartNewSimulationButton.Text = "Szimuláció indítása";
             this.StartNewSimulationButton.UseVisualStyleBackColor = true;
             this.StartNewSimulationButton.Click += new System.EventHandler(this.StartNewSimulation_Click);
             // 
             // SimulationStepButton
             // 
-            this.SimulationStepButton.Location = new System.Drawing.Point(6, 187);
+            this.SimulationStepButton.Location = new System.Drawing.Point(6, 129);
             this.SimulationStepButton.Name = "SimulationStepButton";
             this.SimulationStepButton.Size = new System.Drawing.Size(182, 23);
             this.SimulationStepButton.TabIndex = 1;
@@ -250,37 +247,25 @@
             this.StopSimulationButton.TabIndex = 0;
             this.StopSimulationButton.Text = "Szimuláció leállítása";
             this.StopSimulationButton.UseVisualStyleBackColor = true;
+            this.StopSimulationButton.Click += new System.EventHandler(this.StopSimulationButton_Click);
             // 
-            // SimulationStepMethodComboBox
+            // SimulationSpeedDescriptionLabel
             // 
-            this.SimulationStepMethodComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.SimulationStepMethodComboBox.FormattingEnabled = true;
-            this.SimulationStepMethodComboBox.Location = new System.Drawing.Point(6, 102);
-            this.SimulationStepMethodComboBox.Name = "SimulationStepMethodComboBox";
-            this.SimulationStepMethodComboBox.Size = new System.Drawing.Size(182, 21);
-            this.SimulationStepMethodComboBox.TabIndex = 3;
+            this.SimulationSpeedDescriptionLabel.AutoSize = true;
+            this.SimulationSpeedDescriptionLabel.Location = new System.Drawing.Point(6, 134);
+            this.SimulationSpeedDescriptionLabel.Name = "SimulationSpeedDescriptionLabel";
+            this.SimulationSpeedDescriptionLabel.Size = new System.Drawing.Size(109, 13);
+            this.SimulationSpeedDescriptionLabel.TabIndex = 6;
+            this.SimulationSpeedDescriptionLabel.Text = "Időzítés (másodperc):";
             // 
-            // label1
+            // SimulationSpeedLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 86);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(155, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Szimuláció léptetésének módja:";
-            // 
-            // SimulationSpeedTrackBar
-            // 
-            this.SimulationSpeedTrackBar.LargeChange = 10;
-            this.SimulationSpeedTrackBar.Location = new System.Drawing.Point(6, 136);
-            this.SimulationSpeedTrackBar.Maximum = 60;
-            this.SimulationSpeedTrackBar.Minimum = 1;
-            this.SimulationSpeedTrackBar.Name = "SimulationSpeedTrackBar";
-            this.SimulationSpeedTrackBar.Size = new System.Drawing.Size(182, 45);
-            this.SimulationSpeedTrackBar.TabIndex = 5;
-            this.SimulationSpeedTrackBar.TickFrequency = 5;
-            this.SimulationSpeedTrackBar.Value = 1;
-            this.SimulationSpeedTrackBar.Scroll += new System.EventHandler(this.SimulationSpeedTrackBar_Scroll);
+            this.SimulationSpeedLabel.AutoSize = true;
+            this.SimulationSpeedLabel.Location = new System.Drawing.Point(121, 134);
+            this.SimulationSpeedLabel.Name = "SimulationSpeedLabel";
+            this.SimulationSpeedLabel.Size = new System.Drawing.Size(13, 13);
+            this.SimulationSpeedLabel.TabIndex = 7;
+            this.SimulationSpeedLabel.Text = "1";
             // 
             // MainWindow
             // 
@@ -290,10 +275,12 @@
             this.Controls.Add(this.SimulationGroupBox);
             this.Controls.Add(this.EditGroupBox);
             this.Controls.Add(this.DrawPanel);
-            this.Controls.Add(this.graphViewer);
             this.Controls.Add(this.ManageGroupBox);
+            this.MinimumSize = new System.Drawing.Size(640, 510);
             this.Name = "MainWindow";
+            this.ShowIcon = false;
             this.Text = "Automata Szimulátor";
+            this.Resize += new System.EventHandler(this.MainWindow_Resize);
             this.ManageGroupBox.ResumeLayout(false);
             this.EditGroupBox.ResumeLayout(false);
             this.SimulationGroupBox.ResumeLayout(false);
@@ -306,7 +293,6 @@
         #endregion
 
         private System.Windows.Forms.GroupBox ManageGroupBox;
-        private Microsoft.Msagl.GraphViewerGdi.GViewer graphViewer;
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button LoadButton;
         private System.Windows.Forms.OpenFileDialog loadAutomataDialog;
@@ -323,8 +309,10 @@
         private System.Windows.Forms.Button SimulationStepButton;
         private System.Windows.Forms.Button StopSimulationButton;
         private System.Windows.Forms.ComboBox SimulationStepMethodComboBox;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label SimulationStepTrackBarLabel;
         private System.Windows.Forms.TrackBar SimulationSpeedTrackBar;
+        private System.Windows.Forms.Label SimulationSpeedLabel;
+        private System.Windows.Forms.Label SimulationSpeedDescriptionLabel;
     }
 }
 

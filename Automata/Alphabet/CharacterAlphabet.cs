@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Automata.Alphabet
@@ -20,6 +21,9 @@ namespace Automata.Alphabet
 
         public bool ContainsSymbol(object symbol)
         {
+            if (symbol == null)
+                return false;
+
             if (symbol is char temp)
                 return Symbols.Contains(temp);
             
@@ -33,7 +37,12 @@ namespace Automata.Alphabet
             }
         }
 
-        public string ConstructLabel(object[] symbols)
+        public string ConstructSymbolText(bool list = true)
+        {
+            return ConstructSymbolText(Symbols.Select(s => s as object));
+        }
+
+        public string ConstructSymbolText(IEnumerable<object> symbols, bool list = true)
         {
             var sb = new StringBuilder();
 
@@ -44,8 +53,10 @@ namespace Automata.Alphabet
 
                 if (sb.Length == 0)
                     sb.Append(symbol);
-                else
+                else if (list)
                     sb.Append($", {symbol}");
+                else
+                    sb.Append($" {symbol}");
             }
 
             return sb.ToString();

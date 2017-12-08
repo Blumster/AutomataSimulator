@@ -14,12 +14,17 @@ namespace Automata.Simulator.Form
 
     public partial class MainWindow : WinForm
     {
+        #region Constants
         private const string Manual = "Manuális";
         private const string Timed = "Időzített";
         private const string Instant = "Azonnali";
+        #endregion
 
+        #region Fields
         private AutomataGraph _graph;
+        #endregion
 
+        #region Properties
         AutomataGraph Graph
         {
             get
@@ -34,7 +39,9 @@ namespace Automata.Simulator.Form
             }
         }
         object Simulation { get; set; }
+        #endregion
 
+        #region Constructor
         public MainWindow()
         {
             InitializeComponent();
@@ -47,9 +54,17 @@ namespace Automata.Simulator.Form
 
             SetupUI();
         }
+        #endregion
 
-        #region Button handlers
-        #region Manage Buttons
+        #region Control event handlers
+        #region MainWindow
+        private void MainWindow_Resize(object sender, EventArgs e)
+        {
+            DrawGraph();
+        }
+        #endregion
+
+        #region Manage Controls
         private void NewButton_Click(object sender, EventArgs e)
         {
             if (Graph != null && !Graph.IsSaved)
@@ -75,7 +90,7 @@ namespace Automata.Simulator.Form
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    Graph = new AutomataGraph(form.CreateAutomata());
+                    Graph = new AutomataGraph(form.CreateAutomata(), true);
 
                     DrawGraph();
                 }
@@ -105,37 +120,92 @@ namespace Automata.Simulator.Form
         }
         #endregion
 
-        #region Edit Buttons
+        #region Edit Controls
         private void NewStateButton_Click(object sender, EventArgs e)
         {
+            using (var newStateForm = new NewStateForm(Graph.Automata))
+            {
+                var result = newStateForm.ShowDialog();
+                if (result == DialogResult.Cancel)
+                    return;
+
+                DrawGraph();
+            }
+
             SetupUI();
         }
 
         private void NewTransitionButton_Click(object sender, EventArgs e)
         {
+            using (var newTransitionForm = new NewTransitionForm(Graph.Automata))
+            {
+                var result = newTransitionForm.ShowDialog();
+                if (result == DialogResult.Cancel)
+                    return;
+
+                DrawGraph();
+            }
+
             SetupUI();
         }
 
         private void DeleteStateButton_Click(object sender, EventArgs e)
         {
+            using (var deleteStateForm = new DeleteStateForm(Graph.Automata))
+            {
+                var result = deleteStateForm.ShowDialog();
+                if (result == DialogResult.Cancel)
+                    return;
+
+                DrawGraph();
+            }
+
             SetupUI();
         }
 
         private void DeleteTransitionButton_Click(object sender, EventArgs e)
         {
+            using (var deleteTransitionForm = new DeleteTransitionForm(Graph.Automata))
+            {
+                var result = deleteTransitionForm.ShowDialog();
+                if (result == DialogResult.Cancel)
+                    return;
+
+                DrawGraph();
+            }
+
             SetupUI();
         }
         #endregion
 
-        #region Simulation Buttons
+        #region Simulation Controls
         private void StartNewSimulation_Click(object sender, EventArgs e)
+        {
+            Simulation = new object();
+
+            //Text = "\u275A\u275A " + Text; // pause icon
+            Text = "\u25B6 " + Text;
+
+            SetupUI();
+        }
+
+        private void StopSimulationButton_Click(object sender, EventArgs e)
+        {
+            Simulation = null;
+
+            Text = Text.Substring(Text.IndexOf(' ')).Trim();
+
+            SetupUI();
+        }
+
+        private void SimulationStepMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetupUI();
         }
 
         private void SimulationSpeedTrackBar_Scroll(object sender, EventArgs e)
         {
-
+            SimulationSpeedLabel.Text = SimulationSpeedTrackBar.Value.ToString();
         }
         #endregion
         #endregion
@@ -145,7 +215,6 @@ namespace Automata.Simulator.Form
         {
             if (Graph == null)
             {
-                ManageGroupBox.Enabled = true;
                 SaveButton.Enabled = false;
 
                 EditGroupBox.Enabled = false;
@@ -154,32 +223,43 @@ namespace Automata.Simulator.Form
             }
             else if (Simulation == null)
             {
+                SaveButton.Enabled = true;
+
                 EditGroupBox.Enabled = true;
                 NewStateButton.Enabled = true;
-                NewTransitionButton.Enabled = true;
+                NewTransitionButton.Enabled = Graph.NodeCount > 0;
                 DeleteStateButton.Enabled = Graph.NodeCount > 0;
                 DeleteTransitionButton.Enabled = Graph.EdgeCount > 0;
 
                 SimulationGroupBox.Enabled = true;
                 StartNewSimulationButton.Enabled = true;
                 StopSimulationButton.Enabled = false;
-                SimulationStepButton.Enabled = false;
                 SimulationStepMethodComboBox.Enabled = true;
+                SimulationStepButton.Enabled = false;
+                SimulationSpeedTrackBar.Enabled = true;
             }
             else
             {
                 ManageGroupBox.Enabled = false;
-
                 EditGroupBox.Enabled = false;
 
                 SimulationGroupBox.Enabled = true;
                 StartNewSimulationButton.Enabled = false;
                 StopSimulationButton.Enabled = true;
-                SimulationStepButton.Enabled = Manual.Equals(SimulationStepMethodComboBox.SelectedItem);
                 SimulationStepMethodComboBox.Enabled = false;
+                SimulationStepButton.Enabled = true;
+                SimulationSpeedTrackBar.Enabled = true;
             }
 
-            // TODO: step button, track bar visibility based on selected method!
+            var isManual = Manual.Equals(SimulationStepMethodComboBox.SelectedItem);
+
+            SimulationStepButton.Visible = isManual;
+
+            var isTimed = Timed.Equals(SimulationStepMethodComboBox.SelectedItem);
+
+            SimulationSpeedTrackBar.Visible = isTimed;
+            SimulationSpeedLabel.Visible = isTimed;
+            SimulationSpeedDescriptionLabel.Visible = isTimed;
         }
 
         private void SaveAutomata()
@@ -190,6 +270,9 @@ namespace Automata.Simulator.Form
 
         public void DrawGraph()
         {
+            if (WindowState == FormWindowState.Minimized)
+                return;
+
             if (Graph == null)
             {
                 DrawPanel.Invalidate();

@@ -33,7 +33,7 @@ namespace Automata.Simulator.IO
 
             try
             {
-                return new AutomataGraph(automata);
+                return new AutomataGraph(automata, true);
             }
             catch
             {

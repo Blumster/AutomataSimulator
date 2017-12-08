@@ -56,9 +56,12 @@ namespace Automata.State
         }
         #endregion
 
-        #region Constructors
+        #region Constructor
         public State(string id)
         {
+            if (id.Length > 3)
+                throw new ArgumentOutOfRangeException(nameof(id), "The state id can only be 3 characters long!");
+
             Id = id;
         }
         #endregion

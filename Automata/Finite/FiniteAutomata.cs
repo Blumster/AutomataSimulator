@@ -8,13 +8,6 @@ namespace Automata.Finite
     using State;
     using Transition;
 
-    public enum AutomataType : byte
-    {
-        Deterministic = 0,
-        Nondeterministic = 1,
-        Pushdown = 2
-    }
-
     public class FiniteAutomata : IAutomata
     {
         #region Properties
@@ -32,8 +25,10 @@ namespace Automata.Finite
 
         #region Events
         public event StateDelegate OnStateAdd;
+        public event StateDelegate OnStateUpdate;
         public event StateDelegate OnStateRemove;
         public event TransitionDelegate OnTransitionAdd;
+        public event TransitionDelegate OnTransitionUpdate;
         public event TransitionDelegate OnTransitionRemove;
         #endregion
 
@@ -74,6 +69,15 @@ namespace Automata.Finite
 
         #region Interface
         #region State
+        public IState GetStartState()
+        {
+            foreach (var state in States)
+                if (state.IsStartState)
+                    return state;
+
+            return null;
+        }
+
         public IState GetState(string stateId)
         {
             if (stateId == null)
@@ -96,12 +100,37 @@ namespace Automata.Finite
             {
                 state = InstantiateState(stateId, isStartState, isAcceptState);
 
-                States.Add(state);
-
-                OnStateAdd?.Invoke(this, new StateEventArgs(state));
+                if (States.Add(state))
+                    OnStateAdd?.Invoke(this, new StateEventArgs(state));
             }
 
             return state;
+        }
+
+        public IState CreateState(string stateId, bool isStartState = false, bool isAcceptState = false)
+        {
+            if (stateId == null)
+                throw new ArgumentNullException(nameof(stateId), "The state id can not be null!");
+
+            var state = GetState(stateId);
+            if (state != null)
+                throw new Exception("A state with this id already exists!");
+
+            state = InstantiateState(stateId, isStartState, isAcceptState);
+
+            if (States.Add(state))
+                OnStateAdd?.Invoke(this, new StateEventArgs(state));
+
+            return state;
+        }
+
+        public void UpdateState(IState state)
+        {
+            if (state == null)
+                throw new ArgumentNullException(nameof(state), "The state can not be null!");
+
+            if (GetState(state.Id) == state)
+                OnStateUpdate?.Invoke(this, new StateEventArgs(state));
         }
 
         public void RemoveState(string stateId)
@@ -118,6 +147,8 @@ namespace Automata.Finite
         {
             if (state == null)
                 throw new ArgumentNullException(nameof(state), "The state can not be null!");
+
+            RemoveTransitionsForState(state);
 
             if (States.Remove(state))
                 OnStateRemove?.Invoke(this, new StateEventArgs(state));
@@ -160,6 +191,16 @@ namespace Automata.Finite
             return transition;
         }
 
+        public void UpdateTransition(IStateTransition transition)
+        {
+            if (transition == null)
+                throw new ArgumentNullException(nameof(transition), "The transition can not be null!");
+
+            foreach (var existing in Transitions)
+                if (existing == transition)
+                    OnTransitionUpdate?.Invoke(this, new TransitionEventArgs(transition));
+        }
+
         public void RemoveTrasition(IStateTransition transition)
         {
             if (transition == null)
@@ -168,11 +209,23 @@ namespace Automata.Finite
             if (Transitions.Remove(transition))
                 OnTransitionRemove?.Invoke(this, new TransitionEventArgs(transition));
         }
+
+        public void RemoveTransitionsForState(IState state)
+        {
+            var toRemove = new List<IStateTransition>();
+
+            foreach (var transition in Transitions)
+                if (transition.SourceState == state || transition.TargetState == state)
+                    toRemove.Add(transition);
+
+            foreach (var transition in toRemove)
+                RemoveTrasition(transition);
+        }
         #endregion
         #endregion
 
         #region Virtual
-        protected virtual IState InstantiateState(string stateId, bool isStartState = false, bool isAcceptState = false)
+        public virtual IState InstantiateState(string stateId, bool isStartState = false, bool isAcceptState = false)
         {
             return new State(stateId)
             {
@@ -182,7 +235,7 @@ namespace Automata.Finite
             };
         }
 
-        protected virtual IStateTransition InstantiateTransition(string sourceId, string targetId, object[] symbols)
+        public virtual IStateTransition InstantiateTransition(string sourceId, string targetId, object[] symbols)
         {
             var sourceState = GetOrCreateState(sourceId);
             var targetState = GetOrCreateState(targetId);

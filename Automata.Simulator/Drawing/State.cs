@@ -1,6 +1,4 @@
-﻿using System;
-
-using Microsoft.Msagl.Drawing;
+﻿using Microsoft.Msagl.Drawing;
 
 namespace Automata.Simulator.Drawing
 {
@@ -8,12 +6,20 @@ namespace Automata.Simulator.Drawing
 
     public class State : Node
     {
+        #region Fields
+        public bool? OverrideIsStartState = null;
+        public bool? OverrideIsAcceptState = null;
+        #endregion
+
         public IState LogicState { get; }
 
         public bool IsStartState
         {
             get
             {
+                if (OverrideIsStartState.HasValue)
+                    return OverrideIsStartState.Value;
+
                 return LogicState.IsStartState;
             }
         }
@@ -21,6 +27,9 @@ namespace Automata.Simulator.Drawing
         {
             get
             {
+                if (OverrideIsAcceptState.HasValue)
+                    return OverrideIsAcceptState.Value;
+
                 return LogicState.IsAcceptState;
             }
         }
