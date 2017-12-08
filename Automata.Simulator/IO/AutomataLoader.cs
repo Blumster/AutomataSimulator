@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Automata.Simulator.IO
 {
@@ -38,6 +40,16 @@ namespace Automata.Simulator.IO
             catch
             {
                 return null;
+            }
+        }
+
+        public static void a(string path)
+        {
+            using (var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var reader = XmlReader.Create(fileStream))
+                {
+                }
             }
         }
     }

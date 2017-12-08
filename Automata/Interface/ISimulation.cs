@@ -7,6 +7,7 @@ namespace Automata.Interface
 
     public interface ISimpleSimulation
     {
+        #region Properties
         IAutomata Automata { get; }
         SimulationStepMethod StepMethod { get; }
         bool IsPaused { get; set; }
@@ -15,14 +16,18 @@ namespace Automata.Interface
         object[] Input { get; }
         object NextInputSymbol { get; }
         int RemainingInputLength { get; }
+        #endregion
 
+        #region Events
         event Action OnStep;
+        #endregion
 
+        #region Methods
         SimulationStepResult CanStep();
         SimulationStepResult Step();
         SimulationStepResult SpecificStep(IStateTransition transition);
         void UpdateStepMethod(SimulationStepMethod type);
-
         IEnumerable<IStateTransition> GetApplicableTransitions();
+        #endregion
     }
 }

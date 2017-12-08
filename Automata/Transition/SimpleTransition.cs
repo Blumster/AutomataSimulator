@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Xml;
 
 namespace Automata.Transition
 {
@@ -41,6 +42,16 @@ namespace Automata.Transition
                     return true;
 
             return false;
+        }
+
+        public void WriteToXmlWriter(XmlWriter writer)
+        {
+
+        }
+
+        public void ReadFromXmlReader(XmlReader reader)
+        {
+
         }
     }
 }

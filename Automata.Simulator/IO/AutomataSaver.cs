@@ -31,7 +31,7 @@ namespace Automata.Simulator.IO
 
                 using (var writer = XmlWriter.Create(outputFileStream, settings))
                 {
-                    writer.WriteStartElement(automata.GetType().Name);
+                    writer.WriteStartElement("Automata");
                     writer.WriteAttributeString("Type", automata.GetType().AssemblyQualifiedName);
 
                     writer.WriteStartElement("Alphabet");
@@ -39,7 +39,7 @@ namespace Automata.Simulator.IO
                     
                     automata.Alphabet.WriteToXmlWriter(writer);
 
-                    writer.WriteEndElement();
+                    writer.WriteEndElement(); // Alphabet
 
                     writer.WriteStartElement("States");
 
@@ -47,6 +47,7 @@ namespace Automata.Simulator.IO
                     {
                         writer.WriteStartElement("State");
                         writer.WriteAttributeString("Type", state.GetType().AssemblyQualifiedName);
+                        writer.WriteAttributeString("Id", state.Id);
                         writer.WriteAttributeString("IsStartState", state.IsStartState.ToString(CultureInfo.InvariantCulture));
                         writer.WriteAttributeString("IsAcceptState", state.IsAcceptState.ToString(CultureInfo.InvariantCulture));
 
@@ -55,14 +56,26 @@ namespace Automata.Simulator.IO
                         writer.WriteEndElement();
                     }
 
-                    writer.WriteEndElement();
+                    writer.WriteEndElement(); // States
 
                     writer.WriteStartElement("Transitions");
 
-                    // TODO
-                    writer.WriteEndElement();
+                    foreach (var transition in automata.Transitions)
+                    {
+                        writer.WriteStartElement("Transition");
+                        writer.WriteAttributeString("Type", transition.GetType().AssemblyQualifiedName);
+                        writer.WriteAttributeString("SourceStateId", transition.SourceState.Id);
+                        writer.WriteAttributeString("TargetStateId", transition.TargetState.Id);
+                        writer.WriteAttributeString("Symbols", automata.Alphabet.ConstructSymbolText(transition.Symbols, false).Replace(" ", ""));
 
-                    writer.WriteEndElement();
+                        transition.WriteToXmlWriter(writer);
+
+                        writer.WriteEndElement(); // Transition
+                    }
+
+                    writer.WriteEndElement(); // Transitions
+
+                    writer.WriteEndElement(); // Automata
                 }
             }
 
