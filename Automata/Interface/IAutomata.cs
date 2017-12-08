@@ -2,6 +2,7 @@
 
 namespace Automata.Interface
 {
+    using Enum;
     using Event;
     using Transition;
 

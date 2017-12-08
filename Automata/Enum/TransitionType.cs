@@ -1,4 +1,4 @@
-﻿namespace Automata.Transition
+﻿namespace Automata.Enum
 {
     public enum TransitionType
     {

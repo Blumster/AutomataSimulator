@@ -6,14 +6,15 @@ using System.Reflection;
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Drawing;
 
-using MsaglRectangle = Microsoft.Msagl.Core.Geometry.Rectangle;
-using MsaglSize = Microsoft.Msagl.Core.DataStructures.Size;
+using MsaglColor = Microsoft.Msagl.Drawing.Color;
 using DrawingEdge = Microsoft.Msagl.Drawing.Edge;
 
 namespace Automata.Simulator.Drawing
 {
+    using Enum;
     using Event;
     using Interface;
+    using Simulation;
 
     public class AutomataGraph : Graph
     {
@@ -82,6 +83,8 @@ namespace Automata.Simulator.Drawing
                 SetupGraph();
             }
         }
+
+        public ISimpleSimulation Simulation { get; private set; }
         #endregion
 
         #region Constructor
@@ -157,14 +160,62 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Simulation
-        public void StartSimulation()
+        public void StartSimulation(SimulationStepMethod stepType, object[] input, int timedDelaySeconds)
         {
+            Simulation = new SimpleSimulation(Automata, stepType, input, timedDelaySeconds);
+            Simulation.OnStep += OnSimulationStep;
 
+            ColorizeCurrentStateAndEdges();
         }
 
-        public void EndSimulation()
+        public void StopSimulation()
         {
+            Simulation.OnStep -= OnSimulationStep;
+            Simulation = null;
 
+            ClearColors();
+
+            Redraw();
+        }
+
+        public SimulationStepResult StepSimulation()
+        {
+            if (Simulation == null)
+                throw new Exception("Can't step a non-existant simulation!");
+
+            return Simulation.Step();
+        }
+
+        private void OnSimulationStep()
+        {
+            ClearColors();
+
+            ColorizeCurrentStateAndEdges();
+        }
+
+        private void ColorizeCurrentStateAndEdges()
+        {
+            if (!_logicToDrawingStateMap.ContainsKey(Simulation.CurrentState))
+                throw new Exception("The current state of the simulation is not in the graph!");
+
+            var state = _logicToDrawingStateMap[Simulation.CurrentState];
+
+            state.Attr.Color = MsaglColor.Blue;
+            state.Label.FontColor = MsaglColor.Blue;
+
+            foreach (var edge in state.Edges)
+            {
+                if (edge.SourceNode != state)
+                    continue;
+
+                if (edge is Edge transition && transition.LogicTransition.HandlesSymbol(Simulation.NextInputSymbol))
+                {
+                    transition.Attr.Color = MsaglColor.Cyan;
+                    transition.Label.FontColor = MsaglColor.Cyan;
+                }
+            }
+
+            Redraw();
         }
         #endregion
 
@@ -337,6 +388,23 @@ namespace Automata.Simulator.Drawing
                 // TODO: kell ez?
             }
             return false;*/
+        }
+
+        private void ClearColors()
+        {
+            foreach (var state in Nodes)
+            {
+                state.Attr.Color = MsaglColor.Black;
+                state.Attr.FillColor = MsaglColor.Transparent;
+
+                state.Label.FontColor = MsaglColor.Black;
+
+                foreach (var edge in state.Edges)
+                {
+                    edge.Attr.Color = MsaglColor.Black;
+                    edge.Label.FontColor = MsaglColor.Black;
+                }
+            }
         }
         #endregion
 

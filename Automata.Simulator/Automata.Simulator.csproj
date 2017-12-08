@@ -93,6 +93,12 @@
     <Compile Include="Form\NewStateForm.Designer.cs">
       <DependentUpon>NewStateForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\SimulationSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\SimulationSettingsForm.Designer.cs">
+      <DependentUpon>SimulationSettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="IO\AutomataLoader.cs" />
     <Compile Include="IO\AutomataSaver.cs" />
     <Compile Include="Program.cs" />
@@ -115,6 +121,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form\NewStateForm.resx">
       <DependentUpon>NewStateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\SimulationSettingsForm.resx">
+      <DependentUpon>SimulationSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

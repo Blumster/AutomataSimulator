@@ -5,8 +5,8 @@ using System.Xml;
 
 namespace Automata.State
 {
+    using Enum;
     using Interface;
-    using Transition;
 
     [DebuggerDisplay("Állapot: {Id}")]
     public class State : IState

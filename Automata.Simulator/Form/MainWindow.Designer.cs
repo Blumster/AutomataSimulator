@@ -41,14 +41,14 @@
             this.DeleteStateButton = new System.Windows.Forms.Button();
             this.NewTransitionButton = new System.Windows.Forms.Button();
             this.SimulationGroupBox = new System.Windows.Forms.GroupBox();
+            this.SimulationSpeedLabel = new System.Windows.Forms.Label();
+            this.SimulationSpeedDescriptionLabel = new System.Windows.Forms.Label();
             this.SimulationSpeedTrackBar = new System.Windows.Forms.TrackBar();
             this.SimulationStepTrackBarLabel = new System.Windows.Forms.Label();
             this.SimulationStepMethodComboBox = new System.Windows.Forms.ComboBox();
             this.StartNewSimulationButton = new System.Windows.Forms.Button();
             this.SimulationStepButton = new System.Windows.Forms.Button();
             this.StopSimulationButton = new System.Windows.Forms.Button();
-            this.SimulationSpeedDescriptionLabel = new System.Windows.Forms.Label();
-            this.SimulationSpeedLabel = new System.Windows.Forms.Label();
             this.ManageGroupBox.SuspendLayout();
             this.EditGroupBox.SuspendLayout();
             this.SimulationGroupBox.SuspendLayout();
@@ -189,6 +189,24 @@
             this.SimulationGroupBox.TabStop = false;
             this.SimulationGroupBox.Text = "Szimuláció";
             // 
+            // SimulationSpeedLabel
+            // 
+            this.SimulationSpeedLabel.AutoSize = true;
+            this.SimulationSpeedLabel.Location = new System.Drawing.Point(121, 134);
+            this.SimulationSpeedLabel.Name = "SimulationSpeedLabel";
+            this.SimulationSpeedLabel.Size = new System.Drawing.Size(13, 13);
+            this.SimulationSpeedLabel.TabIndex = 7;
+            this.SimulationSpeedLabel.Text = "1";
+            // 
+            // SimulationSpeedDescriptionLabel
+            // 
+            this.SimulationSpeedDescriptionLabel.AutoSize = true;
+            this.SimulationSpeedDescriptionLabel.Location = new System.Drawing.Point(6, 134);
+            this.SimulationSpeedDescriptionLabel.Name = "SimulationSpeedDescriptionLabel";
+            this.SimulationSpeedDescriptionLabel.Size = new System.Drawing.Size(109, 13);
+            this.SimulationSpeedDescriptionLabel.TabIndex = 6;
+            this.SimulationSpeedDescriptionLabel.Text = "Időzítés (másodperc):";
+            // 
             // SimulationSpeedTrackBar
             // 
             this.SimulationSpeedTrackBar.Location = new System.Drawing.Point(6, 150);
@@ -238,6 +256,7 @@
             this.SimulationStepButton.TabIndex = 1;
             this.SimulationStepButton.Text = "Léptetés";
             this.SimulationStepButton.UseVisualStyleBackColor = true;
+            this.SimulationStepButton.Click += new System.EventHandler(this.SimulationStepButton_Click);
             // 
             // StopSimulationButton
             // 
@@ -248,24 +267,6 @@
             this.StopSimulationButton.Text = "Szimuláció leállítása";
             this.StopSimulationButton.UseVisualStyleBackColor = true;
             this.StopSimulationButton.Click += new System.EventHandler(this.StopSimulationButton_Click);
-            // 
-            // SimulationSpeedDescriptionLabel
-            // 
-            this.SimulationSpeedDescriptionLabel.AutoSize = true;
-            this.SimulationSpeedDescriptionLabel.Location = new System.Drawing.Point(6, 134);
-            this.SimulationSpeedDescriptionLabel.Name = "SimulationSpeedDescriptionLabel";
-            this.SimulationSpeedDescriptionLabel.Size = new System.Drawing.Size(109, 13);
-            this.SimulationSpeedDescriptionLabel.TabIndex = 6;
-            this.SimulationSpeedDescriptionLabel.Text = "Időzítés (másodperc):";
-            // 
-            // SimulationSpeedLabel
-            // 
-            this.SimulationSpeedLabel.AutoSize = true;
-            this.SimulationSpeedLabel.Location = new System.Drawing.Point(121, 134);
-            this.SimulationSpeedLabel.Name = "SimulationSpeedLabel";
-            this.SimulationSpeedLabel.Size = new System.Drawing.Size(13, 13);
-            this.SimulationSpeedLabel.TabIndex = 7;
-            this.SimulationSpeedLabel.Text = "1";
             // 
             // MainWindow
             // 

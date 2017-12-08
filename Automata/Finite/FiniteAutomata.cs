@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Automata.Finite
 {
+    using Enum;
     using Event;
     using Interface;
     using State;

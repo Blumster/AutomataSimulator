@@ -10,6 +10,7 @@ using Microsoft.Msagl.GraphViewerGdi;
 namespace Automata.Simulator.Form
 {
     using Drawing;
+    using Enum;
     using IO;
 
     public partial class MainWindow : WinForm
@@ -38,7 +39,6 @@ namespace Automata.Simulator.Form
                 SetupUI();
             }
         }
-        object Simulation { get; set; }
         #endregion
 
         #region Constructor
@@ -181,7 +181,13 @@ namespace Automata.Simulator.Form
         #region Simulation Controls
         private void StartNewSimulation_Click(object sender, EventArgs e)
         {
-            Simulation = new object();
+            using (var simulationSettingsForm = new SimulationSettingsForm())
+            {
+                if (simulationSettingsForm.ShowDialog() == DialogResult.Cancel)
+                    return;
+
+                Graph.StartSimulation(GetStepType(), simulationSettingsForm.GetInputArray(), SimulationSpeedTrackBar.Value);
+            }
 
             //Text = "\u275A\u275A " + Text; // pause icon
             Text = "\u25B6 " + Text;
@@ -191,15 +197,29 @@ namespace Automata.Simulator.Form
 
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
-            Simulation = null;
+            StopSimulation();
+        }
 
-            Text = Text.Substring(Text.IndexOf(' ')).Trim();
+        private void SimulationStepButton_Click(object sender, EventArgs e)
+        {
+            var result = Graph.StepSimulation();
+            switch (result)
+            {
+                case SimulationStepResult.NoMoreInputSymbols:
+                    StopSimulation();
+                    break;
 
-            SetupUI();
+                case SimulationStepResult.Ambiguous:
+                    // TODO
+                    break;
+            }
         }
 
         private void SimulationStepMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (Graph != null && Graph.Simulation != null)
+                Graph.Simulation.UpdateStepMethod(GetStepType());
+
             SetupUI();
         }
 
@@ -221,7 +241,7 @@ namespace Automata.Simulator.Form
 
                 SimulationGroupBox.Enabled = false;
             }
-            else if (Simulation == null)
+            else if (Graph.Simulation == null)
             {
                 SaveButton.Enabled = true;
 
@@ -268,6 +288,18 @@ namespace Automata.Simulator.Form
                 Graph.IsSaved = AutomataSaver.Save(saveAutomataDialog.FileName, Graph.Automata);
         }
 
+        private void StopSimulation()
+        {
+            if (Graph == null)
+                return;
+
+            Graph.StopSimulation();
+
+            Text = Text.Substring(Text.IndexOf(' ')).Trim();
+
+            SetupUI();
+        }
+
         public void DrawGraph()
         {
             if (WindowState == FormWindowState.Minimized)
@@ -291,6 +323,17 @@ namespace Automata.Simulator.Form
 
                 renderer.Render(graphics, 0, 0, DrawPanel.Width, DrawPanel.Height);
             }
+        }
+
+        private SimulationStepMethod GetStepType()
+        {
+            if (Instant.Equals(SimulationStepMethodComboBox.SelectedItem))
+                return SimulationStepMethod.Instant;
+
+            if (Timed.Equals(SimulationStepMethodComboBox.SelectedItem))
+                return SimulationStepMethod.Timed;
+
+            return SimulationStepMethod.Manual;
         }
         #endregion
     }

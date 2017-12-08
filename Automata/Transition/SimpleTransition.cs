@@ -30,5 +30,17 @@ namespace Automata.Transition
 
             Array.Copy(symbols, Symbols, symbols.Length);
         }
+
+        public bool HandlesSymbol(object symbol)
+        {
+            if (!Automata.Alphabet.ContainsSymbol(symbol))
+                return false;
+
+            foreach (var handledSymbols in Symbols)
+                if (symbol.Equals(handledSymbols))
+                    return true;
+
+            return false;
+        }
     }
 }
