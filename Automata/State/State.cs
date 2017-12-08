@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml;
 
 namespace Automata.State
 {
@@ -63,6 +64,18 @@ namespace Automata.State
                 throw new ArgumentOutOfRangeException(nameof(id), "The state id can only be 3 characters long!");
 
             Id = id;
+        }
+        #endregion
+
+        #region Methods
+        public void WriteToXmlWriter(XmlWriter writer)
+        {
+            
+        }
+
+        public void ReadFromXmlReader(XmlReader reader)
+        {
+            
         }
         #endregion
 

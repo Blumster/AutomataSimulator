@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml;
 
 namespace Automata.Interface
 {
@@ -12,5 +13,8 @@ namespace Automata.Interface
         IEnumerable<IStateTransition> SelfTransitions { get; }
         IEnumerable<IStateTransition> InTransitions { get; }
         IEnumerable<IStateTransition> OutTransitions { get; }
+
+        void WriteToXmlWriter(XmlWriter writer);
+        void ReadFromXmlReader(XmlReader reader);
     }
 }

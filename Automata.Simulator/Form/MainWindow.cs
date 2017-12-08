@@ -265,7 +265,7 @@ namespace Automata.Simulator.Form
         private void SaveAutomata()
         {
             if (saveAutomataDialog.ShowDialog() == DialogResult.OK)
-                Graph.IsSaved = AutomataSaver.Save(saveAutomataDialog.FileName, Graph);
+                Graph.IsSaved = AutomataSaver.Save(saveAutomataDialog.FileName, Graph.Automata);
         }
 
         public void DrawGraph()

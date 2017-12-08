@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace Automata.Alphabet
 {
@@ -39,7 +40,7 @@ namespace Automata.Alphabet
 
         public string ConstructSymbolText(bool list = true)
         {
-            return ConstructSymbolText(Symbols.Select(s => s as object));
+            return ConstructSymbolText(Symbols.Select(s => s as object), list);
         }
 
         public string ConstructSymbolText(IEnumerable<object> symbols, bool list = true)
@@ -60,6 +61,16 @@ namespace Automata.Alphabet
             }
 
             return sb.ToString();
+        }
+
+        public void WriteToXmlWriter(XmlWriter writer)
+        {
+            writer.WriteAttributeString("Symbols", ConstructSymbolText(false).Replace(" ", ""));
+        }
+
+        public void ReadFromXmlReader(XmlReader reader)
+        {
+            Symbols.UnionWith(reader.GetAttribute("Symbols"));
         }
     }
 }
