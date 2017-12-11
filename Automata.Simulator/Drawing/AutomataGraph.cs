@@ -14,7 +14,10 @@ namespace Automata.Simulator.Drawing
     using Enum;
     using Event;
     using Interface;
+    using Microsoft.Msagl.GraphViewerGdi;
     using Simulation;
+    using System.Drawing.Drawing2D;
+    using System.Drawing.Text;
 
     public class AutomataGraph : Graph
     {
@@ -85,6 +88,7 @@ namespace Automata.Simulator.Drawing
         }
 
         public ISimpleSimulation Simulation { get; private set; }
+        public SimulationDrawer SimulationDrawer { get; }
         #endregion
 
         #region Constructor
@@ -92,6 +96,8 @@ namespace Automata.Simulator.Drawing
         {
             Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
             RegisterEvents = registerEvents;
+
+            SimulationDrawer = new SimulationDrawer(this);
         }
         #endregion
 
@@ -219,7 +225,7 @@ namespace Automata.Simulator.Drawing
         }
         #endregion
 
-        #region Drawing
+        #region Graph
         private void SetupGraph()
         {
             foreach (var logicState in Automata.States)
@@ -239,11 +245,6 @@ namespace Automata.Simulator.Drawing
 
             if (NodeCount > 0 || EdgeCount > 0)
                 throw new Exception("The automata graph is in an invalid state!");
-        }
-
-        public void Redraw()
-        {
-            OnRedraw?.Invoke();
         }
 
         private void AddState(IState state)
@@ -327,6 +328,33 @@ namespace Automata.Simulator.Drawing
 
             Redraw();
         }
+        #endregion
+
+        #region Drawing
+        public void Redraw()
+        {
+            OnRedraw?.Invoke();
+        }
+
+        public void DrawAutomata(Graphics graphics, int left, int top, int width, int height)
+        {
+            var renderer = new GraphRenderer(this);
+            renderer.CalculateLayout();
+
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            graphics.CompositingQuality = CompositingQuality.HighQuality;
+            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+            if (Simulation != null)
+            {
+                renderer.Render(graphics, left, top, width, height - SimulationDrawer.InputDisplayHeight);
+
+                SimulationDrawer.DrawSimulationData(graphics, left, top + height - SimulationDrawer.InputDisplayHeight, width, SimulationDrawer.InputDisplayHeight);
+            }
+            else
+                renderer.Render(graphics, left, top, width, height);
+        }
 
         public void SetupState(State state)
         {
@@ -408,7 +436,7 @@ namespace Automata.Simulator.Drawing
         }
         #endregion
 
-        #region Helpers
+        #region Reflection
         private static void AddDiscontinousSegment(Curve container, ICurve curve)
         {
             if (SegmentsFieldInfo == null)

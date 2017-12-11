@@ -311,18 +311,8 @@ namespace Automata.Simulator.Form
                 return;
             }
 
-            var renderer = new GraphRenderer(Graph);
-            renderer.CalculateLayout();
-
             using (var graphics = DrawPanel.CreateGraphics())
-            {
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-                renderer.Render(graphics, 0, 0, DrawPanel.Width, DrawPanel.Height);
-            }
+                Graph.DrawAutomata(graphics, 0, 0, DrawPanel.Width, DrawPanel.Height);
         }
 
         private SimulationStepMethod GetStepType()
