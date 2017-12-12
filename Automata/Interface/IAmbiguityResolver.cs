@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Automata.Simulation
+namespace Automata.Interface
 {
-    public class PushdownSimulation
+    public interface IAmbiguityResolver
     {
+        void Resolve(ISimulation simulation);
     }
 }

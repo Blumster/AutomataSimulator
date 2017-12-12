@@ -20,18 +20,10 @@ namespace Automata.Simulator.Form
 {
     using Drawing;
     using Interface;
-    using Pushdown;
 
     public partial class NewTransitionForm : WinForm
     {
         public IAutomata Automata { get; }
-        public bool IsPushdownAutomata
-        {
-            get
-            {
-                return Automata is PushdownAutomata;
-            }
-        }
 
         public NewTransitionForm(IAutomata automata)
         {

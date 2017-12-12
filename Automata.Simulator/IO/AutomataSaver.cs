@@ -6,16 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
 
 namespace Automata.Simulator.IO
 {
-    using Alphabet;
-    using Finite;
     using Interface;
-    using Pushdown;
-    using State;
-    using Transition;
 
     public static class AutomataSaver
     {
@@ -31,8 +25,12 @@ namespace Automata.Simulator.IO
 
                 using (var writer = XmlWriter.Create(outputFileStream, settings))
                 {
+                    writer.WriteStartDocument(true);
+
                     writer.WriteStartElement("Automata");
                     writer.WriteAttributeString("Type", automata.GetType().AssemblyQualifiedName);
+
+                    automata.WriteToXmlWriter(writer);
 
                     writer.WriteStartElement("Alphabet");
                     writer.WriteAttributeString("Type", automata.Alphabet.GetType().AssemblyQualifiedName);
@@ -76,6 +74,8 @@ namespace Automata.Simulator.IO
                     writer.WriteEndElement(); // Transitions
 
                     writer.WriteEndElement(); // Automata
+
+                    writer.WriteEndDocument();
                 }
             }
 

@@ -5,7 +5,7 @@ namespace Automata.Interface
 {
     using Enum;
 
-    public interface ISimpleSimulation
+    public interface ISimulation
     {
         #region Properties
         IAutomata Automata { get; }
@@ -14,8 +14,12 @@ namespace Automata.Interface
         int StepDelaySeconds { get; }
         IState CurrentState { get; }
         object[] Input { get; }
-        object NextInputSymbol { get; }
+        object CurrentInputSymbol { get; }
+        int CurrentInputIndex { get; }
         int RemainingInputLength { get; }
+        bool IsFinished { get; }
+        bool IsInAcceptState { get; }
+        bool IsInAmbiguousState { get; }
         #endregion
 
         #region Events
@@ -26,7 +30,7 @@ namespace Automata.Interface
         SimulationStepResult CanStep();
         SimulationStepResult Step();
         SimulationStepResult SpecificStep(IStateTransition transition);
-        void UpdateStepMethod(SimulationStepMethod type);
+        SimulationStepResult DoAllSteps();
         IEnumerable<IStateTransition> GetApplicableTransitions();
         #endregion
     }

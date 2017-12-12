@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.Windows.Forms;
 
 using WinForm = System.Windows.Forms.Form;
-
-using Microsoft.Msagl.GraphViewerGdi;
 
 namespace Automata.Simulator.Form
 {
@@ -99,9 +95,18 @@ namespace Automata.Simulator.Form
 
         private void LoadButton_Click(object sender, EventArgs e)
         {
-            if (true || loadAutomataDialog.ShowDialog() == DialogResult.OK)
+            if (loadAutomataDialog.ShowDialog() == DialogResult.OK)
             {
-                Graph = AutomataLoader.Load(loadAutomataDialog.FileName);
+                Graph = null;
+
+                try
+                {
+                    Graph = AutomataLoader.a(loadAutomataDialog.FileName);
+                }
+                catch
+                {
+                }
+                
                 if (Graph == null)
                 {
                     MessageBox.Show("Hiba történt az automata beolvasása közben!");
@@ -109,6 +114,12 @@ namespace Automata.Simulator.Form
                 }
 
                 Graph.OnRedraw += DrawGraph;
+
+                //Graph.StartSimulation(SimulationStepMethod.Manual, new object[] { 'a', 'a', 'a' }, 10);
+
+                //Text = "\u25B6 " + Text;
+
+                SetupUI();
 
                 DrawGraph();
             }
@@ -189,7 +200,6 @@ namespace Automata.Simulator.Form
                 Graph.StartSimulation(GetStepType(), simulationSettingsForm.GetInputArray(), SimulationSpeedTrackBar.Value);
             }
 
-            //Text = "\u275A\u275A " + Text; // pause icon
             Text = "\u25B6 " + Text;
 
             SetupUI();
@@ -200,26 +210,25 @@ namespace Automata.Simulator.Form
             StopSimulation();
         }
 
-        private void SimulationStepButton_Click(object sender, EventArgs e)
+        private void SimulationControlButton_Click(object sender, EventArgs e)
         {
-            var result = Graph.StepSimulation();
-            switch (result)
+            if (Graph.Simulation.StepMethod == SimulationStepMethod.Manual)
             {
-                case SimulationStepResult.NoMoreInputSymbols:
-                    StopSimulation();
-                    break;
+                var result = Graph.StepSimulation();
+                switch (result)
+                {
+                    case SimulationStepResult.Finished:
+                        SimulationControlButton.Enabled = false;
+                        break;
 
-                case SimulationStepResult.Ambiguous:
-                    // TODO
-                    break;
+                    case SimulationStepResult.Ambiguous:
+                        break;
+                }
             }
         }
 
         private void SimulationStepMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Graph != null && Graph.Simulation != null)
-                Graph.Simulation.UpdateStepMethod(GetStepType());
-
             SetupUI();
         }
 
@@ -235,6 +244,7 @@ namespace Automata.Simulator.Form
         {
             if (Graph == null)
             {
+                ManageGroupBox.Enabled = true;
                 SaveButton.Enabled = false;
 
                 EditGroupBox.Enabled = false;
@@ -243,6 +253,7 @@ namespace Automata.Simulator.Form
             }
             else if (Graph.Simulation == null)
             {
+                ManageGroupBox.Enabled = true;
                 SaveButton.Enabled = true;
 
                 EditGroupBox.Enabled = true;
@@ -255,7 +266,7 @@ namespace Automata.Simulator.Form
                 StartNewSimulationButton.Enabled = true;
                 StopSimulationButton.Enabled = false;
                 SimulationStepMethodComboBox.Enabled = true;
-                SimulationStepButton.Enabled = false;
+                SimulationControlButton.Enabled = false;
                 SimulationSpeedTrackBar.Enabled = true;
             }
             else
@@ -267,19 +278,42 @@ namespace Automata.Simulator.Form
                 StartNewSimulationButton.Enabled = false;
                 StopSimulationButton.Enabled = true;
                 SimulationStepMethodComboBox.Enabled = false;
-                SimulationStepButton.Enabled = true;
-                SimulationSpeedTrackBar.Enabled = true;
+                SimulationSpeedTrackBar.Enabled = false;
+                SimulationControlButton.Enabled = true;
             }
 
             var isManual = Manual.Equals(SimulationStepMethodComboBox.SelectedItem);
 
-            SimulationStepButton.Visible = isManual;
+            SimulationControlButton.Visible = isManual;
 
             var isTimed = Timed.Equals(SimulationStepMethodComboBox.SelectedItem);
 
             SimulationSpeedTrackBar.Visible = isTimed;
             SimulationSpeedLabel.Visible = isTimed;
             SimulationSpeedDescriptionLabel.Visible = isTimed;
+
+            PropertiesGroupBox.Visible = Graph != null;
+            if (PropertiesGroupBox.Visible)
+            {
+                switch (Graph.Automata.Type)
+                {
+                    case AutomataType.Deterministic:
+                        TypeLabel.Text = "Determinisztikus";
+                        break;
+
+                    case AutomataType.PartiallyDeterminsitic:
+                        TypeLabel.Text = "Parciálisan determinisztikus";
+                        break;
+
+                    case AutomataType.Nondeterministic:
+                        TypeLabel.Text = "Nemdeterminisztikus";
+                        break;
+                }
+
+                StateCountLabel.Text = Graph.Automata.States.Count.ToString();
+                TransitionCountLabel.Text = Graph.Automata.Transitions.Count.ToString();
+                AlphabetLabel.Text = Graph.Automata.Alphabet.ConstructSymbolText();
+            }
         }
 
         private void SaveAutomata()

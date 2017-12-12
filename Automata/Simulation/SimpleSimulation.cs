@@ -7,7 +7,7 @@ namespace Automata.Simulation
     using Enum;
     using Interface;
 
-    public class SimpleSimulation : ISimpleSimulation
+    public class SimpleSimulation : ISimulation
     {
         #region Fields
         private int _index = 0;
@@ -25,11 +25,19 @@ namespace Automata.Simulation
 
         public object[] Input { get; }
 
-        public object NextInputSymbol
+        public object CurrentInputSymbol
         {
             get
             {
                 return _index < Input.Length ? Input[_index] : null;
+            }
+        }
+
+        public int CurrentInputIndex
+        {
+            get
+            {
+                return _index;
             }
         }
 
@@ -38,6 +46,30 @@ namespace Automata.Simulation
             get
             {
                 return Input.Length - _index;
+            }
+        }
+
+        public bool IsFinished
+        {
+            get
+            {
+                return RemainingInputLength == 0;
+            }
+        }
+
+        public bool IsInAcceptState
+        {
+            get
+            {
+                return CurrentState.IsAcceptState;
+            }
+        }
+
+        public bool IsInAmbiguousState
+        {
+            get
+            {
+                return GetApplicableTransitions().Count() > 1;
             }
         }
         #endregion
@@ -62,6 +94,7 @@ namespace Automata.Simulation
             Array.Copy(input, Input, input.Length);
         }
 
+        #region Interface
         public SimulationStepResult CanStep()
         {
             if (RemainingInputLength == 0)
@@ -83,7 +116,7 @@ namespace Automata.Simulation
             var applicableTransitions = new List<IStateTransition>();
 
             foreach (var transition in CurrentState.OutTransitions)
-                if (transition.HandlesSymbol(NextInputSymbol))
+                if (transition.HandlesSymbol(CurrentInputSymbol))
                     applicableTransitions.Add(transition);
 
             return applicableTransitions;
@@ -98,6 +131,9 @@ namespace Automata.Simulation
 
                 StepInternal(applicableTransitions.First());
             }
+
+            if (IsFinished)
+                return SimulationStepResult.Finished;
 
             return canStep;
         }
@@ -120,11 +156,20 @@ namespace Automata.Simulation
             return SimulationStepResult.Success;
         }
 
-        public void UpdateStepMethod(SimulationStepMethod method)
+        public SimulationStepResult DoAllSteps()
         {
+            var i = 0;
 
+            while (++i <= 10000)
+            {
+
+            }
+
+            return SimulationStepResult.Timeout;
         }
+        #endregion
 
+        #region Methods
         private void StepInternal(IStateTransition transition)
         {
             if (transition == null)
@@ -133,7 +178,7 @@ namespace Automata.Simulation
             if (transition.SourceState != CurrentState)
                 throw new ArgumentException("The transition's source isn't the current state!", nameof(transition));
 
-            if (!transition.HandlesSymbol(NextInputSymbol))
+            if (!transition.HandlesSymbol(CurrentInputSymbol))
                 throw new ArgumentException("The transition can't handle the current input symbol!", nameof(transition));
 
             CurrentState = transition.TargetState;
@@ -142,5 +187,6 @@ namespace Automata.Simulation
 
             OnStep?.Invoke();
         }
+        #endregion
     }
 }

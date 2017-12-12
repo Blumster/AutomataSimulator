@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
+using System.Timers;
 
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Drawing;
@@ -32,6 +33,7 @@ namespace Automata.Simulator.Drawing
 
         #region Fields
         private bool _registerEvents = false;
+        private Timer _stepTimer = null;
         private IAutomata _automata;
         private IDictionary<IState, State> _logicToDrawingStateMap = new Dictionary<IState, State>();
         private IDictionary<IStateTransition, Edge> _logicToDrawingTransitionMap = new Dictionary<IStateTransition, Edge>();
@@ -87,7 +89,7 @@ namespace Automata.Simulator.Drawing
             }
         }
 
-        public ISimpleSimulation Simulation { get; private set; }
+        public ISimulation Simulation { get; private set; }
         public SimulationDrawer SimulationDrawer { get; }
         #endregion
 
@@ -168,16 +170,49 @@ namespace Automata.Simulator.Drawing
         #region Simulation
         public void StartSimulation(SimulationStepMethod stepType, object[] input, int timedDelaySeconds)
         {
-            Simulation = new SimpleSimulation(Automata, stepType, input, timedDelaySeconds);
-            Simulation.OnStep += OnSimulationStep;
+            var filteredSymbols = new List<object>();
+
+            foreach (var symbol in input)
+                if (Automata.Alphabet.ContainsSymbol(symbol))
+                    filteredSymbols.Add(symbol);
+
+            Simulation = new SimpleSimulation(Automata, stepType, filteredSymbols.ToArray(), timedDelaySeconds);
+
+            switch (stepType)
+            {
+                case SimulationStepMethod.Manual:
+                    Simulation.OnStep += OnSimulationStep;
+                    break;
+
+                case SimulationStepMethod.Instant:
+                    Simulation.DoAllSteps();
+                    break;
+
+                case SimulationStepMethod.Timed:
+                    Simulation.OnStep += OnSimulationStep;
+
+                    _stepTimer = new Timer(timedDelaySeconds * 1000)
+                    {
+                        AutoReset = true
+                    };
+                    _stepTimer.Elapsed += StepTimer_Elapsed;
+                    _stepTimer.Start();
+                    break;
+            }
 
             ColorizeCurrentStateAndEdges();
+        }
+
+        private void StepTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            StepSimulation();
         }
 
         public void StopSimulation()
         {
             Simulation.OnStep -= OnSimulationStep;
             Simulation = null;
+            _stepTimer = null;
 
             ClearColors();
 
@@ -189,7 +224,15 @@ namespace Automata.Simulator.Drawing
             if (Simulation == null)
                 throw new Exception("Can't step a non-existant simulation!");
 
-            return Simulation.Step();
+            var result = Simulation.Step();
+            switch (result)
+            {
+                case SimulationStepResult.Finished:
+                    _stepTimer = null;
+                    break;
+            }
+
+            return result;
         }
 
         private void OnSimulationStep()
@@ -206,15 +249,31 @@ namespace Automata.Simulator.Drawing
 
             var state = _logicToDrawingStateMap[Simulation.CurrentState];
 
-            state.Attr.Color = MsaglColor.Blue;
-            state.Label.FontColor = MsaglColor.Blue;
+            if (Simulation.IsFinished)
+            {
+                if (Simulation.IsInAcceptState)
+                {
+                    state.Attr.Color = MsaglColor.Green;
+                    state.Label.FontColor = MsaglColor.Green;
+                }
+                else
+                {
+                    state.Attr.Color = MsaglColor.Red;
+                    state.Label.FontColor = MsaglColor.Red;
+                }
+            }
+            else
+            {
+                state.Attr.Color = MsaglColor.Blue;
+                state.Label.FontColor = MsaglColor.Blue;
+            }
 
             foreach (var edge in state.Edges)
             {
                 if (edge.SourceNode != state)
                     continue;
 
-                if (edge is Edge transition && transition.LogicTransition.HandlesSymbol(Simulation.NextInputSymbol))
+                if (edge is Edge transition && transition.LogicTransition.HandlesSymbol(Simulation.CurrentInputSymbol))
                 {
                     transition.Attr.Color = MsaglColor.Cyan;
                     transition.Label.FontColor = MsaglColor.Cyan;
@@ -348,9 +407,11 @@ namespace Automata.Simulator.Drawing
 
             if (Simulation != null)
             {
-                renderer.Render(graphics, left, top, width, height - SimulationDrawer.InputDisplayHeight);
+                graphics.Clear(System.Drawing.Color.White);
 
-                SimulationDrawer.DrawSimulationData(graphics, left, top + height - SimulationDrawer.InputDisplayHeight, width, SimulationDrawer.InputDisplayHeight);
+                SimulationDrawer.DrawSimulationData(graphics, left, top + height - SimulationDrawer.SimulationBarHeight, width);
+
+                renderer.Render(graphics, left, top, width, height - SimulationDrawer.SimulationBarHeight);
             }
             else
                 renderer.Render(graphics, left, top, width, height);

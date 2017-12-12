@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace Automata.Finite
 {
@@ -12,14 +13,15 @@ namespace Automata.Finite
     public class FiniteAutomata : IAutomata
     {
         #region Properties
-        public IAlphabet Alphabet { get; }
+        public IAlphabet Alphabet { get; set; }
         public ISet<IState> States { get; } = new HashSet<IState>();
         public ISet<IStateTransition> Transitions { get; } = new HashSet<IStateTransition>();
-        public bool IsDeterministic
+
+        public AutomataType Type
         {
             get
             {
-                return IsDeterministicAutomata();
+                return CalculateType();
             }
         }
         #endregion
@@ -35,6 +37,10 @@ namespace Automata.Finite
 
 
         #region Constructors
+        public FiniteAutomata()
+        {
+        }
+
         public FiniteAutomata(IAlphabet alphabet)
         {
             Alphabet = alphabet ?? throw new ArgumentNullException(nameof(alphabet), "The state id can not be null!");
@@ -223,6 +229,18 @@ namespace Automata.Finite
                 RemoveTrasition(transition);
         }
         #endregion
+
+        #region IO
+        public void WriteToXmlWriter(XmlWriter writer)
+        {
+
+        }
+
+        public void ReadFromXmlReader(XmlReader reader)
+        {
+
+        }
+        #endregion
         #endregion
 
         #region Virtual
@@ -249,9 +267,30 @@ namespace Automata.Finite
         #endregion
 
         #region Methods
-        private bool IsDeterministicAutomata()
+        private AutomataType CalculateType()
         {
-            return true;
+            var type = AutomataType.Deterministic;
+
+            foreach (var state in States)
+            {
+                foreach (var symbol in Alphabet.GetSymbols())
+                {
+                    var applicableTransitions = new List<IStateTransition>();
+
+                    foreach (var transition in GetTransitions(state, TransitionType.Out))
+                    {
+                        if (transition.HandlesSymbol(symbol))
+                            applicableTransitions.Add(transition);
+                    }
+
+                    if (applicableTransitions.Count == 0 && type == AutomataType.Deterministic)
+                        type = AutomataType.PartiallyDeterminsitic;
+                    else if (applicableTransitions.Count > 1)
+                        type = AutomataType.Nondeterministic;
+                }
+            }
+
+            return type;
         }
         #endregion
     }

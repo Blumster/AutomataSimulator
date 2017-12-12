@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Alphabet\CharacterAlphabet.cs" />
+    <Compile Include="Enum\AutomataType.cs" />
     <Compile Include="Enum\SimulationStepResult.cs" />
     <Compile Include="Event\StateDelegate.cs" />
     <Compile Include="Event\StateEventArgs.cs" />
@@ -48,17 +49,15 @@
     <Compile Include="Event\TransitionEventArg.cs" />
     <Compile Include="Finite\FiniteAutomata.cs" />
     <Compile Include="Interface\IAlphabet.cs" />
+    <Compile Include="Interface\IAmbiguityResolver.cs" />
     <Compile Include="Interface\IAutomata.cs" />
     <Compile Include="Interface\ISimulation.cs" />
     <Compile Include="Interface\IStateTransition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interface\IState.cs" />
-    <Compile Include="Pushdown\PushdownAutomata.cs" />
-    <Compile Include="Simulation\PushdownSimulation.cs" />
     <Compile Include="Simulation\SimpleSimulation.cs" />
     <Compile Include="Enum\SimulationStepMethod.cs" />
     <Compile Include="State\State.cs" />
-    <Compile Include="Transition\PushdownTransition.cs" />
     <Compile Include="Transition\SimpleTransition.cs" />
     <Compile Include="Enum\TransitionType.cs" />
   </ItemGroup>

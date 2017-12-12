@@ -6,7 +6,7 @@ namespace Automata.Interface
     public interface IState
     {
         string Id { get; }
-        IAutomata Automata { get; }
+        IAutomata Automata { get; set; }
         bool IsStartState { get; set; }
         bool IsAcceptState { get; set; }
 

@@ -12,12 +12,22 @@ namespace Automata.Alphabet
     {
         public HashSet<char> Symbols { get; } = new HashSet<char>();
 
+        public CharacterAlphabet()
+        {
+
+        }
+
         public CharacterAlphabet(IEnumerable<char> symbols)
         {
             if (symbols == null)
                 throw new ArgumentNullException(nameof(symbols), "The alphabet's input symbols can't be null!");
 
             Symbols.UnionWith(symbols);
+        }
+
+        public IEnumerable<object> GetSymbols()
+        {
+            return Symbols.Select(c => c as object);
         }
 
         public bool ContainsSymbol(object symbol)

@@ -47,12 +47,22 @@
             this.SimulationStepTrackBarLabel = new System.Windows.Forms.Label();
             this.SimulationStepMethodComboBox = new System.Windows.Forms.ComboBox();
             this.StartNewSimulationButton = new System.Windows.Forms.Button();
-            this.SimulationStepButton = new System.Windows.Forms.Button();
+            this.SimulationControlButton = new System.Windows.Forms.Button();
             this.StopSimulationButton = new System.Windows.Forms.Button();
+            this.PropertiesGroupBox = new System.Windows.Forms.GroupBox();
+            this.AlphabetLabel = new System.Windows.Forms.Label();
+            this.AlphabetDescriptionLabel = new System.Windows.Forms.Label();
+            this.TypeLabel = new System.Windows.Forms.Label();
+            this.TypeDescriptionLabel = new System.Windows.Forms.Label();
+            this.TransitionCountLabel = new System.Windows.Forms.Label();
+            this.StateCountLabel = new System.Windows.Forms.Label();
+            this.StateCountDescriptionLabel = new System.Windows.Forms.Label();
+            this.TransitionCountDescriptionLabel = new System.Windows.Forms.Label();
             this.ManageGroupBox.SuspendLayout();
             this.EditGroupBox.SuspendLayout();
             this.SimulationGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SimulationSpeedTrackBar)).BeginInit();
+            this.PropertiesGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // ManageGroupBox
@@ -180,11 +190,11 @@
             this.SimulationGroupBox.Controls.Add(this.SimulationStepTrackBarLabel);
             this.SimulationGroupBox.Controls.Add(this.SimulationStepMethodComboBox);
             this.SimulationGroupBox.Controls.Add(this.StartNewSimulationButton);
-            this.SimulationGroupBox.Controls.Add(this.SimulationStepButton);
+            this.SimulationGroupBox.Controls.Add(this.SimulationControlButton);
             this.SimulationGroupBox.Controls.Add(this.StopSimulationButton);
             this.SimulationGroupBox.Location = new System.Drawing.Point(1058, 273);
             this.SimulationGroupBox.Name = "SimulationGroupBox";
-            this.SimulationGroupBox.Size = new System.Drawing.Size(194, 294);
+            this.SimulationGroupBox.Size = new System.Drawing.Size(194, 285);
             this.SimulationGroupBox.TabIndex = 4;
             this.SimulationGroupBox.TabStop = false;
             this.SimulationGroupBox.Text = "Szimuláció";
@@ -209,7 +219,7 @@
             // 
             // SimulationSpeedTrackBar
             // 
-            this.SimulationSpeedTrackBar.Location = new System.Drawing.Point(6, 150);
+            this.SimulationSpeedTrackBar.Location = new System.Drawing.Point(6, 158);
             this.SimulationSpeedTrackBar.Maximum = 60;
             this.SimulationSpeedTrackBar.Minimum = 1;
             this.SimulationSpeedTrackBar.Name = "SimulationSpeedTrackBar";
@@ -248,15 +258,15 @@
             this.StartNewSimulationButton.UseVisualStyleBackColor = true;
             this.StartNewSimulationButton.Click += new System.EventHandler(this.StartNewSimulation_Click);
             // 
-            // SimulationStepButton
+            // SimulationControlButton
             // 
-            this.SimulationStepButton.Location = new System.Drawing.Point(6, 129);
-            this.SimulationStepButton.Name = "SimulationStepButton";
-            this.SimulationStepButton.Size = new System.Drawing.Size(182, 23);
-            this.SimulationStepButton.TabIndex = 1;
-            this.SimulationStepButton.Text = "Léptetés";
-            this.SimulationStepButton.UseVisualStyleBackColor = true;
-            this.SimulationStepButton.Click += new System.EventHandler(this.SimulationStepButton_Click);
+            this.SimulationControlButton.Location = new System.Drawing.Point(6, 129);
+            this.SimulationControlButton.Name = "SimulationControlButton";
+            this.SimulationControlButton.Size = new System.Drawing.Size(182, 23);
+            this.SimulationControlButton.TabIndex = 1;
+            this.SimulationControlButton.Text = "Léptetés";
+            this.SimulationControlButton.UseVisualStyleBackColor = true;
+            this.SimulationControlButton.Click += new System.EventHandler(this.SimulationControlButton_Click);
             // 
             // StopSimulationButton
             // 
@@ -268,11 +278,101 @@
             this.StopSimulationButton.UseVisualStyleBackColor = true;
             this.StopSimulationButton.Click += new System.EventHandler(this.StopSimulationButton_Click);
             // 
+            // PropertiesGroupBox
+            // 
+            this.PropertiesGroupBox.Controls.Add(this.AlphabetLabel);
+            this.PropertiesGroupBox.Controls.Add(this.AlphabetDescriptionLabel);
+            this.PropertiesGroupBox.Controls.Add(this.TypeLabel);
+            this.PropertiesGroupBox.Controls.Add(this.TypeDescriptionLabel);
+            this.PropertiesGroupBox.Controls.Add(this.TransitionCountLabel);
+            this.PropertiesGroupBox.Controls.Add(this.StateCountLabel);
+            this.PropertiesGroupBox.Controls.Add(this.StateCountDescriptionLabel);
+            this.PropertiesGroupBox.Controls.Add(this.TransitionCountDescriptionLabel);
+            this.PropertiesGroupBox.Location = new System.Drawing.Point(1058, 564);
+            this.PropertiesGroupBox.Name = "PropertiesGroupBox";
+            this.PropertiesGroupBox.Size = new System.Drawing.Size(194, 105);
+            this.PropertiesGroupBox.TabIndex = 5;
+            this.PropertiesGroupBox.TabStop = false;
+            this.PropertiesGroupBox.Text = "Automata tulajdonságai";
+            this.PropertiesGroupBox.Visible = false;
+            // 
+            // AlphabetLabel
+            // 
+            this.AlphabetLabel.Location = new System.Drawing.Point(58, 55);
+            this.AlphabetLabel.Name = "AlphabetLabel";
+            this.AlphabetLabel.Size = new System.Drawing.Size(130, 42);
+            this.AlphabetLabel.TabIndex = 7;
+            this.AlphabetLabel.Text = "a, b, c";
+            // 
+            // AlphabetDescriptionLabel
+            // 
+            this.AlphabetDescriptionLabel.AutoSize = true;
+            this.AlphabetDescriptionLabel.Location = new System.Drawing.Point(6, 55);
+            this.AlphabetDescriptionLabel.Name = "AlphabetDescriptionLabel";
+            this.AlphabetDescriptionLabel.Size = new System.Drawing.Size(41, 13);
+            this.AlphabetDescriptionLabel.TabIndex = 6;
+            this.AlphabetDescriptionLabel.Text = "Ábécé:";
+            // 
+            // TypeLabel
+            // 
+            this.TypeLabel.AutoSize = true;
+            this.TypeLabel.Location = new System.Drawing.Point(56, 42);
+            this.TypeLabel.Name = "TypeLabel";
+            this.TypeLabel.Size = new System.Drawing.Size(135, 13);
+            this.TypeLabel.TabIndex = 5;
+            this.TypeLabel.Text = "Parciálisan determinisztikus";
+            // 
+            // TypeDescriptionLabel
+            // 
+            this.TypeDescriptionLabel.AutoSize = true;
+            this.TypeDescriptionLabel.Location = new System.Drawing.Point(6, 42);
+            this.TypeDescriptionLabel.Name = "TypeDescriptionLabel";
+            this.TypeDescriptionLabel.Size = new System.Drawing.Size(44, 13);
+            this.TypeDescriptionLabel.TabIndex = 4;
+            this.TypeDescriptionLabel.Text = "Típusa:";
+            // 
+            // TransitionCountLabel
+            // 
+            this.TransitionCountLabel.AutoSize = true;
+            this.TransitionCountLabel.Location = new System.Drawing.Point(106, 29);
+            this.TransitionCountLabel.Name = "TransitionCountLabel";
+            this.TransitionCountLabel.Size = new System.Drawing.Size(13, 13);
+            this.TransitionCountLabel.TabIndex = 3;
+            this.TransitionCountLabel.Text = "0";
+            // 
+            // StateCountLabel
+            // 
+            this.StateCountLabel.AutoSize = true;
+            this.StateCountLabel.Location = new System.Drawing.Point(106, 16);
+            this.StateCountLabel.Name = "StateCountLabel";
+            this.StateCountLabel.Size = new System.Drawing.Size(13, 13);
+            this.StateCountLabel.TabIndex = 2;
+            this.StateCountLabel.Text = "0";
+            // 
+            // StateCountDescriptionLabel
+            // 
+            this.StateCountDescriptionLabel.AutoSize = true;
+            this.StateCountDescriptionLabel.Location = new System.Drawing.Point(6, 16);
+            this.StateCountDescriptionLabel.Name = "StateCountDescriptionLabel";
+            this.StateCountDescriptionLabel.Size = new System.Drawing.Size(87, 13);
+            this.StateCountDescriptionLabel.TabIndex = 1;
+            this.StateCountDescriptionLabel.Text = "Állapotok száma:";
+            // 
+            // TransitionCountDescriptionLabel
+            // 
+            this.TransitionCountDescriptionLabel.AutoSize = true;
+            this.TransitionCountDescriptionLabel.Location = new System.Drawing.Point(6, 29);
+            this.TransitionCountDescriptionLabel.Name = "TransitionCountDescriptionLabel";
+            this.TransitionCountDescriptionLabel.Size = new System.Drawing.Size(94, 13);
+            this.TransitionCountDescriptionLabel.TabIndex = 0;
+            this.TransitionCountDescriptionLabel.Text = "Átmenetek száma:";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1264, 681);
+            this.Controls.Add(this.PropertiesGroupBox);
             this.Controls.Add(this.SimulationGroupBox);
             this.Controls.Add(this.EditGroupBox);
             this.Controls.Add(this.DrawPanel);
@@ -287,6 +387,8 @@
             this.SimulationGroupBox.ResumeLayout(false);
             this.SimulationGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SimulationSpeedTrackBar)).EndInit();
+            this.PropertiesGroupBox.ResumeLayout(false);
+            this.PropertiesGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -307,13 +409,22 @@
         private System.Windows.Forms.Button DeleteTransitionButton;
         private System.Windows.Forms.GroupBox SimulationGroupBox;
         private System.Windows.Forms.Button StartNewSimulationButton;
-        private System.Windows.Forms.Button SimulationStepButton;
+        private System.Windows.Forms.Button SimulationControlButton;
         private System.Windows.Forms.Button StopSimulationButton;
         private System.Windows.Forms.ComboBox SimulationStepMethodComboBox;
         private System.Windows.Forms.Label SimulationStepTrackBarLabel;
         private System.Windows.Forms.TrackBar SimulationSpeedTrackBar;
         private System.Windows.Forms.Label SimulationSpeedLabel;
         private System.Windows.Forms.Label SimulationSpeedDescriptionLabel;
+        private System.Windows.Forms.GroupBox PropertiesGroupBox;
+        private System.Windows.Forms.Label TransitionCountLabel;
+        private System.Windows.Forms.Label StateCountLabel;
+        private System.Windows.Forms.Label StateCountDescriptionLabel;
+        private System.Windows.Forms.Label TransitionCountDescriptionLabel;
+        private System.Windows.Forms.Label TypeLabel;
+        private System.Windows.Forms.Label TypeDescriptionLabel;
+        private System.Windows.Forms.Label AlphabetLabel;
+        private System.Windows.Forms.Label AlphabetDescriptionLabel;
     }
 }
 

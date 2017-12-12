@@ -8,7 +8,6 @@ namespace Automata.Simulator.Form
     using Alphabet;
     using Finite;
     using Interface;
-    using Pushdown;
 
     public partial class CreateAutomataForm : WinForm
     {
@@ -29,9 +28,6 @@ namespace Automata.Simulator.Form
         {
             if (FiniteAutomata.Equals(TypeComboBox.SelectedItem))
                 return new FiniteAutomata(new CharacterAlphabet(AlphabetTextBox.Text.Replace(" ", "")));
-
-            if (PushdownAutomata.Equals(TypeComboBox.SelectedItem))
-                return new PushdownAutomata(new CharacterAlphabet(AlphabetTextBox.Text.Replace(" ", "")));
 
             return null;
         }

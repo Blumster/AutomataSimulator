@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Xml;
 
 namespace Automata.Interface
 {
     using Enum;
     using Event;
-    using Transition;
 
     public interface IAutomata
     {
         #region Properties
-        IAlphabet Alphabet { get; }
+        IAlphabet Alphabet { get; set; }
         ISet<IState> States { get; }
         ISet<IStateTransition> Transitions { get; }
-        bool IsDeterministic { get; }
+        AutomataType Type { get; }
         #endregion
 
         #region Event
@@ -45,6 +45,11 @@ namespace Automata.Interface
         #region Virtual
         IState InstantiateState(string stateId, bool isStartState = false, bool isAcceptState = false);
         IStateTransition InstantiateTransition(string sourceId, string targetId, object[] symbols);
+        #endregion
+
+        #region IO
+        void WriteToXmlWriter(XmlWriter writer);
+        void ReadFromXmlReader(XmlReader reader);
         #endregion
     }
 }
