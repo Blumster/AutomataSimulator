@@ -9,6 +9,7 @@ namespace Automata.Interface
     {
         #region Properties
         IAutomata Automata { get; }
+        IAmbiguityResolver Resolver { get; set; }
         SimulationStepMethod StepMethod { get; }
         bool IsPaused { get; set; }
         int StepDelaySeconds { get; }

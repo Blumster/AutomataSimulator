@@ -15,6 +15,7 @@ namespace Automata.Simulation
 
         #region Properties
         public IAutomata Automata { get; }
+        public IAmbiguityResolver Resolver { get; set; }
         public SimulationStepMethod StepMethod { get; }
 
         public bool IsPaused { get; set; } = false;
@@ -53,7 +54,7 @@ namespace Automata.Simulation
         {
             get
             {
-                return RemainingInputLength == 0;
+                return CanStep() != SimulationStepResult.Success && CanStep() != SimulationStepResult.Ambiguous;
             }
         }
 
@@ -106,7 +107,12 @@ namespace Automata.Simulation
                 return SimulationStepResult.NoTransition;
 
             if (applicableTransitions.Count() > 1)
+            {
+                if (Resolver == null)
+                    return SimulationStepResult.AmbiguousNoResolver;
+
                 return SimulationStepResult.Ambiguous;
+            }
 
             return SimulationStepResult.Success;
         }
@@ -144,7 +150,7 @@ namespace Automata.Simulation
                 throw new ArgumentNullException(nameof(transition), "The transition can not be null!");
 
             var canStep = CanStep();
-            if (canStep != SimulationStepResult.Ambiguous)
+            if (canStep != SimulationStepResult.Ambiguous && canStep != SimulationStepResult.AmbiguousNoResolver)
                 return SimulationStepResult.Invalid;
             
             var applicableTransitions = GetApplicableTransitions();
@@ -162,7 +168,19 @@ namespace Automata.Simulation
 
             while (++i <= 10000)
             {
+                var result = Step();
 
+                switch (result)
+                {
+                    case SimulationStepResult.Success:
+                        continue;
+
+                    case SimulationStepResult.Ambiguous:
+                        SpecificStep(Resolver.Resolve(this));
+                        continue;
+                }
+
+                return result;
             }
 
             return SimulationStepResult.Timeout;

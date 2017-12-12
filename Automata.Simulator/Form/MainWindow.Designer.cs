@@ -47,7 +47,7 @@
             this.SimulationStepTrackBarLabel = new System.Windows.Forms.Label();
             this.SimulationStepMethodComboBox = new System.Windows.Forms.ComboBox();
             this.StartNewSimulationButton = new System.Windows.Forms.Button();
-            this.SimulationControlButton = new System.Windows.Forms.Button();
+            this.SimulationStepButton = new System.Windows.Forms.Button();
             this.StopSimulationButton = new System.Windows.Forms.Button();
             this.PropertiesGroupBox = new System.Windows.Forms.GroupBox();
             this.AlphabetLabel = new System.Windows.Forms.Label();
@@ -58,6 +58,8 @@
             this.StateCountLabel = new System.Windows.Forms.Label();
             this.StateCountDescriptionLabel = new System.Windows.Forms.Label();
             this.TransitionCountDescriptionLabel = new System.Windows.Forms.Label();
+            this.AmbiguityResolverComboBox = new System.Windows.Forms.ComboBox();
+            this.AmbiguityMethodLabel = new System.Windows.Forms.Label();
             this.ManageGroupBox.SuspendLayout();
             this.EditGroupBox.SuspendLayout();
             this.SimulationGroupBox.SuspendLayout();
@@ -184,13 +186,15 @@
             // SimulationGroupBox
             // 
             this.SimulationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SimulationGroupBox.Controls.Add(this.AmbiguityMethodLabel);
+            this.SimulationGroupBox.Controls.Add(this.AmbiguityResolverComboBox);
             this.SimulationGroupBox.Controls.Add(this.SimulationSpeedLabel);
             this.SimulationGroupBox.Controls.Add(this.SimulationSpeedDescriptionLabel);
             this.SimulationGroupBox.Controls.Add(this.SimulationSpeedTrackBar);
             this.SimulationGroupBox.Controls.Add(this.SimulationStepTrackBarLabel);
             this.SimulationGroupBox.Controls.Add(this.SimulationStepMethodComboBox);
             this.SimulationGroupBox.Controls.Add(this.StartNewSimulationButton);
-            this.SimulationGroupBox.Controls.Add(this.SimulationControlButton);
+            this.SimulationGroupBox.Controls.Add(this.SimulationStepButton);
             this.SimulationGroupBox.Controls.Add(this.StopSimulationButton);
             this.SimulationGroupBox.Location = new System.Drawing.Point(1058, 273);
             this.SimulationGroupBox.Name = "SimulationGroupBox";
@@ -202,7 +206,7 @@
             // SimulationSpeedLabel
             // 
             this.SimulationSpeedLabel.AutoSize = true;
-            this.SimulationSpeedLabel.Location = new System.Drawing.Point(121, 134);
+            this.SimulationSpeedLabel.Location = new System.Drawing.Point(121, 174);
             this.SimulationSpeedLabel.Name = "SimulationSpeedLabel";
             this.SimulationSpeedLabel.Size = new System.Drawing.Size(13, 13);
             this.SimulationSpeedLabel.TabIndex = 7;
@@ -211,7 +215,7 @@
             // SimulationSpeedDescriptionLabel
             // 
             this.SimulationSpeedDescriptionLabel.AutoSize = true;
-            this.SimulationSpeedDescriptionLabel.Location = new System.Drawing.Point(6, 134);
+            this.SimulationSpeedDescriptionLabel.Location = new System.Drawing.Point(6, 174);
             this.SimulationSpeedDescriptionLabel.Name = "SimulationSpeedDescriptionLabel";
             this.SimulationSpeedDescriptionLabel.Size = new System.Drawing.Size(109, 13);
             this.SimulationSpeedDescriptionLabel.TabIndex = 6;
@@ -219,7 +223,7 @@
             // 
             // SimulationSpeedTrackBar
             // 
-            this.SimulationSpeedTrackBar.Location = new System.Drawing.Point(6, 158);
+            this.SimulationSpeedTrackBar.Location = new System.Drawing.Point(6, 198);
             this.SimulationSpeedTrackBar.Maximum = 60;
             this.SimulationSpeedTrackBar.Minimum = 1;
             this.SimulationSpeedTrackBar.Name = "SimulationSpeedTrackBar";
@@ -258,15 +262,15 @@
             this.StartNewSimulationButton.UseVisualStyleBackColor = true;
             this.StartNewSimulationButton.Click += new System.EventHandler(this.StartNewSimulation_Click);
             // 
-            // SimulationControlButton
+            // SimulationStepButton
             // 
-            this.SimulationControlButton.Location = new System.Drawing.Point(6, 129);
-            this.SimulationControlButton.Name = "SimulationControlButton";
-            this.SimulationControlButton.Size = new System.Drawing.Size(182, 23);
-            this.SimulationControlButton.TabIndex = 1;
-            this.SimulationControlButton.Text = "Léptetés";
-            this.SimulationControlButton.UseVisualStyleBackColor = true;
-            this.SimulationControlButton.Click += new System.EventHandler(this.SimulationControlButton_Click);
+            this.SimulationStepButton.Location = new System.Drawing.Point(6, 169);
+            this.SimulationStepButton.Name = "SimulationStepButton";
+            this.SimulationStepButton.Size = new System.Drawing.Size(182, 23);
+            this.SimulationStepButton.TabIndex = 1;
+            this.SimulationStepButton.Text = "Léptetés";
+            this.SimulationStepButton.UseVisualStyleBackColor = true;
+            this.SimulationStepButton.Click += new System.EventHandler(this.SimulationStepButton_Click);
             // 
             // StopSimulationButton
             // 
@@ -367,6 +371,24 @@
             this.TransitionCountDescriptionLabel.TabIndex = 0;
             this.TransitionCountDescriptionLabel.Text = "Átmenetek száma:";
             // 
+            // AmbiguityResolverComboBox
+            // 
+            this.AmbiguityResolverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.AmbiguityResolverComboBox.FormattingEnabled = true;
+            this.AmbiguityResolverComboBox.Location = new System.Drawing.Point(6, 142);
+            this.AmbiguityResolverComboBox.Name = "AmbiguityResolverComboBox";
+            this.AmbiguityResolverComboBox.Size = new System.Drawing.Size(182, 21);
+            this.AmbiguityResolverComboBox.TabIndex = 9;
+            // 
+            // AmbiguityMethodLabel
+            // 
+            this.AmbiguityMethodLabel.AutoSize = true;
+            this.AmbiguityMethodLabel.Location = new System.Drawing.Point(3, 126);
+            this.AmbiguityMethodLabel.Name = "AmbiguityMethodLabel";
+            this.AmbiguityMethodLabel.Size = new System.Drawing.Size(133, 13);
+            this.AmbiguityMethodLabel.TabIndex = 10;
+            this.AmbiguityMethodLabel.Text = "Lépés feloldásának módja:";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -409,7 +431,7 @@
         private System.Windows.Forms.Button DeleteTransitionButton;
         private System.Windows.Forms.GroupBox SimulationGroupBox;
         private System.Windows.Forms.Button StartNewSimulationButton;
-        private System.Windows.Forms.Button SimulationControlButton;
+        private System.Windows.Forms.Button SimulationStepButton;
         private System.Windows.Forms.Button StopSimulationButton;
         private System.Windows.Forms.ComboBox SimulationStepMethodComboBox;
         private System.Windows.Forms.Label SimulationStepTrackBarLabel;
@@ -425,6 +447,8 @@
         private System.Windows.Forms.Label TypeDescriptionLabel;
         private System.Windows.Forms.Label AlphabetLabel;
         private System.Windows.Forms.Label AlphabetDescriptionLabel;
+        private System.Windows.Forms.ComboBox AmbiguityResolverComboBox;
+        private System.Windows.Forms.Label AmbiguityMethodLabel;
     }
 }
 

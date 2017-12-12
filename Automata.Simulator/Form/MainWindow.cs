@@ -5,16 +5,23 @@ using WinForm = System.Windows.Forms.Form;
 
 namespace Automata.Simulator.Form
 {
+    using AmbiguityResolver;
     using Drawing;
+    using Interface;
     using Enum;
     using IO;
+    using Resolver;
 
     public partial class MainWindow : WinForm
     {
         #region Constants
-        private const string Manual = "Manuális";
-        private const string Timed = "Időzített";
+        private const string Manual  = "Manuális";
+        private const string Timed   = "Időzített";
         private const string Instant = "Azonnali";
+
+        private const string NoResolver     = "Nincs";
+        private const string RandomResolver = "Véletlenszerű";
+        private const string ManualResolver = "Manuális";
         #endregion
 
         #region Fields
@@ -47,6 +54,12 @@ namespace Automata.Simulator.Form
             SimulationStepMethodComboBox.Items.Add(Instant);
 
             SimulationStepMethodComboBox.SelectedIndex = 0;
+
+            AmbiguityResolverComboBox.Items.Add(NoResolver);
+            AmbiguityResolverComboBox.Items.Add(RandomResolver);
+            AmbiguityResolverComboBox.Items.Add(ManualResolver);
+
+            AmbiguityResolverComboBox.SelectedIndex = 0;
 
             SetupUI();
         }
@@ -197,7 +210,14 @@ namespace Automata.Simulator.Form
                 if (simulationSettingsForm.ShowDialog() == DialogResult.Cancel)
                     return;
 
-                Graph.StartSimulation(GetStepType(), simulationSettingsForm.GetInputArray(), SimulationSpeedTrackBar.Value);
+                IAmbiguityResolver resolver = null;
+
+                if (ManualResolver.Equals(AmbiguityResolverComboBox.SelectedItem))
+                    resolver = new ManualResolver();
+                else if (RandomResolver.Equals(AmbiguityResolverComboBox.SelectedItem))
+                    resolver = new RandomResolver();
+
+                Graph.StartSimulation(GetStepType(), simulationSettingsForm.GetInputArray(), SimulationSpeedTrackBar.Value, resolver);
             }
 
             Text = "\u25B6 " + Text;
@@ -210,21 +230,13 @@ namespace Automata.Simulator.Form
             StopSimulation();
         }
 
-        private void SimulationControlButton_Click(object sender, EventArgs e)
+        private void SimulationStepButton_Click(object sender, EventArgs e)
         {
-            if (Graph.Simulation.StepMethod == SimulationStepMethod.Manual)
-            {
-                var result = Graph.StepSimulation();
-                switch (result)
-                {
-                    case SimulationStepResult.Finished:
-                        SimulationControlButton.Enabled = false;
-                        break;
+            var result = Graph.StepSimulation();
+            if (result == SimulationStepResult.Success)
+                return;
 
-                    case SimulationStepResult.Ambiguous:
-                        break;
-                }
-            }
+            SimulationStepButton.Enabled = false;
         }
 
         private void SimulationStepMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -266,8 +278,9 @@ namespace Automata.Simulator.Form
                 StartNewSimulationButton.Enabled = true;
                 StopSimulationButton.Enabled = false;
                 SimulationStepMethodComboBox.Enabled = true;
-                SimulationControlButton.Enabled = false;
+                SimulationStepButton.Enabled = false;
                 SimulationSpeedTrackBar.Enabled = true;
+                AmbiguityResolverComboBox.Enabled = true;
             }
             else
             {
@@ -279,12 +292,13 @@ namespace Automata.Simulator.Form
                 StopSimulationButton.Enabled = true;
                 SimulationStepMethodComboBox.Enabled = false;
                 SimulationSpeedTrackBar.Enabled = false;
-                SimulationControlButton.Enabled = true;
+                SimulationStepButton.Enabled = true;
+                AmbiguityResolverComboBox.Enabled = false;
             }
 
             var isManual = Manual.Equals(SimulationStepMethodComboBox.SelectedItem);
 
-            SimulationControlButton.Visible = isManual;
+            SimulationStepButton.Visible = isManual;
 
             var isTimed = Timed.Equals(SimulationStepMethodComboBox.SelectedItem);
 

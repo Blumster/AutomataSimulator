@@ -12,6 +12,7 @@ using DrawingEdge = Microsoft.Msagl.Drawing.Edge;
 
 namespace Automata.Simulator.Drawing
 {
+    using AmbiguityResolver;
     using Enum;
     using Event;
     using Interface;
@@ -168,7 +169,7 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Simulation
-        public void StartSimulation(SimulationStepMethod stepType, object[] input, int timedDelaySeconds)
+        public void StartSimulation(SimulationStepMethod stepType, object[] input, int timedDelaySeconds, IAmbiguityResolver resolver = null)
         {
             var filteredSymbols = new List<object>();
 
@@ -177,6 +178,7 @@ namespace Automata.Simulator.Drawing
                     filteredSymbols.Add(symbol);
 
             Simulation = new SimpleSimulation(Automata, stepType, filteredSymbols.ToArray(), timedDelaySeconds);
+            Simulation.Resolver = resolver ?? new RandomResolver();
 
             switch (stepType)
             {
@@ -212,7 +214,12 @@ namespace Automata.Simulator.Drawing
         {
             Simulation.OnStep -= OnSimulationStep;
             Simulation = null;
-            _stepTimer = null;
+
+            if (_stepTimer != null)
+            {
+                _stepTimer.Stop();
+                _stepTimer = null;
+            }
 
             ClearColors();
 
@@ -225,11 +232,25 @@ namespace Automata.Simulator.Drawing
                 throw new Exception("Can't step a non-existant simulation!");
 
             var result = Simulation.Step();
-            switch (result)
+            if (result == SimulationStepResult.Ambiguous)
+                result = Simulation.SpecificStep(Simulation.Resolver.Resolve(Simulation));
+
+            if (result == SimulationStepResult.Success)
             {
-                case SimulationStepResult.Finished:
-                    _stepTimer = null;
-                    break;
+                if (Simulation.IsFinished)
+                    return SimulationStepResult.Finished;
+
+                return SimulationStepResult.Success;
+            }
+
+            ClearColors();
+
+            ColorizeCurrentStateAndEdges();
+
+            if (_stepTimer != null)
+            {
+                _stepTimer.Stop();
+                _stepTimer = null;
             }
 
             return result;

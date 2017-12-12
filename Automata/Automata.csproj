@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Alphabet\CharacterAlphabet.cs" />
+    <Compile Include="AmbiguityResolver\RandomResolver.cs" />
     <Compile Include="Enum\AutomataType.cs" />
     <Compile Include="Enum\SimulationStepResult.cs" />
     <Compile Include="Event\StateDelegate.cs" />
