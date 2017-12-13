@@ -77,7 +77,7 @@ namespace Automata.Simulator.Form
 
                 _comboBoxSelectionList.Add(transition);
 
-                TransitionComboBox.Items.Add($"{transition.SourceState.Id} -> {transition.TargetState.Id}: {transition.Label}");
+                TransitionComboBox.Items.Add($"{transition.SourceState.Id}{Simulation.CurrentInputSymbol} -> {transition.TargetState.Id}");
             }
 
             if (TransitionComboBox.Items.Count > 0)
