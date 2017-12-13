@@ -8,15 +8,27 @@ namespace Automata.Alphabet
 {
     using Interface;
 
+    /// <summary>
+    /// An alphabet implementation based on regular characters.
+    /// </summary>
     public class CharacterAlphabet : IAlphabet
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public HashSet<char> Symbols { get; } = new HashSet<char>();
 
+        /// <summary>
+        /// Creates a new alphabet without any symbol.
+        /// </summary>
         public CharacterAlphabet()
         {
-
         }
 
+        /// <summary>
+        /// Creates a new alphabet with the set of the given symbols.
+        /// </summary>
+        /// <param name="symbols"></param>
         public CharacterAlphabet(IEnumerable<char> symbols)
         {
             if (symbols == null)
@@ -25,11 +37,20 @@ namespace Automata.Alphabet
             Symbols.UnionWith(symbols);
         }
 
+        /// <summary>
+        /// Returns the iterateable list of symbols contained in this alphabet.
+        /// </summary>
+        /// <returns>The symbols in this alphabet.</returns>
         public IEnumerable<object> GetSymbols()
         {
             return Symbols.Select(c => c as object);
         }
 
+        /// <summary>
+        /// Checks, if the current alphabet contains a given symbol.
+        /// </summary>
+        /// <param name="symbol">The symbol to be checked.</param>
+        /// <returns>True, if the alphabet contains the symbol.</returns>
         public bool ContainsSymbol(object symbol)
         {
             if (symbol == null)
@@ -48,11 +69,22 @@ namespace Automata.Alphabet
             }
         }
 
+        /// <summary>
+        /// Calculates and returns the textual representation of this alphabet.
+        /// </summary>
+        /// <param name="list">If true, the output will be comma separated.</param>
+        /// <returns>The textual representation of this alphabet.</returns>
         public string ConstructSymbolText(bool list = true)
         {
             return ConstructSymbolText(Symbols.Select(s => s as object), list);
         }
 
+        /// <summary>
+        /// Calculates and returns the textual representation of the given symbols.
+        /// </summary>
+        /// <param name="symbols">The list of symbols.</param>
+        /// <param name="list">If true, the output will be comma separated.</param>
+        /// <returns>The textual representation of the given symbols.</returns>
         public string ConstructSymbolText(IEnumerable<object> symbols, bool list = true)
         {
             var sb = new StringBuilder();
@@ -73,11 +105,19 @@ namespace Automata.Alphabet
             return sb.ToString();
         }
 
+        /// <summary>
+        /// This method is called to attach extra data to the XML element of this entity.
+        /// </summary>
+        /// <param name="writer">The current XML writer instance.</param>
         public void WriteToXmlWriter(XmlWriter writer)
         {
             writer.WriteAttributeString("Symbols", ConstructSymbolText(false).Replace(" ", ""));
         }
 
+        /// <summary>
+        /// This method is called to read extra data from the XML element of this entity.
+        /// </summary>
+        /// <param name="reader">The current XML reader instance.</param>
         public void ReadFromXmlReader(XmlReader reader)
         {
             Symbols.UnionWith(reader.GetAttribute("Symbols"));

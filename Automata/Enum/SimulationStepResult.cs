@@ -1,5 +1,8 @@
 ﻿namespace Automata.Enum
 {
+    /// <summary>
+    /// Defines an enumeration for the result of a simulation step.
+    /// </summary>
     public enum SimulationStepResult
     {
         Success             = 0,

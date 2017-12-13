@@ -42,6 +42,7 @@ namespace Automata.Simulator.Drawing
 
         #region Events
         public event Action OnRedraw;
+        public event Action OnSimulationFinished;
         #endregion
 
         #region Properties
@@ -177,8 +178,10 @@ namespace Automata.Simulator.Drawing
                 if (Automata.Alphabet.ContainsSymbol(symbol))
                     filteredSymbols.Add(symbol);
 
-            Simulation = new SimpleSimulation(Automata, stepType, filteredSymbols.ToArray(), timedDelaySeconds);
-            Simulation.Resolver = resolver ?? new RandomResolver();
+            Simulation = new SimpleSimulation(Automata, filteredSymbols.ToArray())
+            {
+                Resolver = resolver
+            };
 
             switch (stepType)
             {
@@ -188,6 +191,8 @@ namespace Automata.Simulator.Drawing
 
                 case SimulationStepMethod.Instant:
                     Simulation.DoAllSteps();
+
+                    OnSimulationFinished?.Invoke();
                     break;
 
                 case SimulationStepMethod.Timed:
@@ -207,7 +212,14 @@ namespace Automata.Simulator.Drawing
 
         private void StepTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            StepSimulation();
+            if (StepSimulation() != SimulationStepResult.Success)
+            {
+                if (_stepTimer != null)
+                {
+                    _stepTimer.Stop();
+                    _stepTimer = null;
+                }
+            }
         }
 
         public void StopSimulation()
@@ -235,22 +247,18 @@ namespace Automata.Simulator.Drawing
             if (result == SimulationStepResult.Ambiguous)
                 result = Simulation.SpecificStep(Simulation.Resolver.Resolve(Simulation));
 
-            if (result == SimulationStepResult.Success)
-            {
-                if (Simulation.IsFinished)
-                    return SimulationStepResult.Finished;
-
-                return SimulationStepResult.Success;
-            }
-
             ClearColors();
 
             ColorizeCurrentStateAndEdges();
 
-            if (_stepTimer != null)
+            if (result == SimulationStepResult.Success)
+                return SimulationStepResult.Success;
+
+            if (Simulation.IsFinished)
             {
-                _stepTimer.Stop();
-                _stepTimer = null;
+                OnSimulationFinished?.Invoke();
+
+                return SimulationStepResult.Finished;
             }
 
             return result;
@@ -270,24 +278,13 @@ namespace Automata.Simulator.Drawing
 
             var state = _logicToDrawingStateMap[Simulation.CurrentState];
 
+            var color = MsaglColor.Blue;
+
             if (Simulation.IsFinished)
-            {
-                if (Simulation.IsInAcceptState)
-                {
-                    state.Attr.Color = MsaglColor.Green;
-                    state.Label.FontColor = MsaglColor.Green;
-                }
-                else
-                {
-                    state.Attr.Color = MsaglColor.Red;
-                    state.Label.FontColor = MsaglColor.Red;
-                }
-            }
-            else
-            {
-                state.Attr.Color = MsaglColor.Blue;
-                state.Label.FontColor = MsaglColor.Blue;
-            }
+                color = Simulation.IsInputAccepted ? MsaglColor.Green : MsaglColor.Red;
+
+            state.Attr.Color = color;
+            state.Label.FontColor = color;
 
             foreach (var edge in state.Edges)
             {

@@ -16,14 +16,7 @@ namespace Automata.Simulation
         #region Properties
         public IAutomata Automata { get; }
         public IAmbiguityResolver Resolver { get; set; }
-        public SimulationStepMethod StepMethod { get; }
-
-        public bool IsPaused { get; set; } = false;
-
-        public int StepDelaySeconds { get; }
-
         public IState CurrentState { get; private set; }
-
         public object[] Input { get; }
 
         public object CurrentInputSymbol
@@ -42,19 +35,22 @@ namespace Automata.Simulation
             }
         }
 
-        public int RemainingInputLength
-        {
-            get
-            {
-                return Input.Length - _index;
-            }
-        }
-
         public bool IsFinished
         {
             get
             {
                 return CanStep() != SimulationStepResult.Success && CanStep() != SimulationStepResult.Ambiguous;
+            }
+        }
+
+        /// <summary>
+        /// Determines, if the input is accepted.
+        /// </summary>
+        public bool IsInputAccepted
+        {
+            get
+            {
+                return IsInAcceptState && Input.Length == CurrentInputIndex;
             }
         }
 
@@ -76,10 +72,19 @@ namespace Automata.Simulation
         #endregion
 
         #region Events
+        /// <summary>
+        /// Defines an event handler to be called after the simulation has made a step.
+        /// </summary>
         public event Action OnStep;
         #endregion
 
-        public SimpleSimulation(IAutomata automata, SimulationStepMethod stepMethod, object[] input, int stepDelaySeconds = 1)
+        #region Constructors
+        /// <summary>
+        /// Creates a new simulation based on the given parameters.
+        /// </summary>
+        /// <param name="automata">The automata to be simulated.</param>
+        /// <param name="input">The input symbols.</param>
+        public SimpleSimulation(IAutomata automata, object[] input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input), "The input symbols array can not be null!");
@@ -87,18 +92,20 @@ namespace Automata.Simulation
             Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
             CurrentState = Automata.GetStartState() ?? throw new ArgumentException(nameof(automata), "The automata must have a start state!");
 
-            StepMethod = stepMethod;
-            StepDelaySeconds = stepDelaySeconds;
-
             Input = new object[input.Length];
 
             Array.Copy(input, Input, input.Length);
         }
+        #endregion
 
         #region Interface
+        /// <summary>
+        /// Determines the step result, without taking the step, for the current input symbol.
+        /// </summary>
+        /// <returns>The step result for the current input symbol.</returns>
         public SimulationStepResult CanStep()
         {
-            if (RemainingInputLength == 0)
+            if (Input.Length - _index == 0)
                 return SimulationStepResult.NoMoreInputSymbols;
 
             var applicableTransitions = GetApplicableTransitions();
@@ -117,17 +124,10 @@ namespace Automata.Simulation
             return SimulationStepResult.Success;
         }
 
-        public IEnumerable<IStateTransition> GetApplicableTransitions()
-        {
-            var applicableTransitions = new List<IStateTransition>();
-
-            foreach (var transition in CurrentState.OutTransitions)
-                if (transition.HandlesSymbol(CurrentInputSymbol))
-                    applicableTransitions.Add(transition);
-
-            return applicableTransitions;
-        }
-
+        /// <summary>
+        /// Does a step in the simulation.
+        /// </summary>
+        /// <returns>The result of the step.</returns>
         public SimulationStepResult Step()
         {
             var canStep = CanStep();
@@ -144,6 +144,11 @@ namespace Automata.Simulation
             return canStep;
         }
 
+        /// <summary>
+        /// Does a specified step in the simulation for ambiguous state.
+        /// </summary>
+        /// <param name="transition">The specific transition to handle.</param>
+        /// <returns>The result of the step.</returns>
         public SimulationStepResult SpecificStep(IStateTransition transition)
         {
             if (transition == null)
@@ -162,6 +167,10 @@ namespace Automata.Simulation
             return SimulationStepResult.Success;
         }
 
+        /// <summary>
+        /// Automatically runs the simulation until it's finished or becomes invalid.
+        /// </summary>
+        /// <returns>The last step's result.</returns>
         public SimulationStepResult DoAllSteps()
         {
             var i = 0;
@@ -176,8 +185,11 @@ namespace Automata.Simulation
                         continue;
 
                     case SimulationStepResult.Ambiguous:
-                        SpecificStep(Resolver.Resolve(this));
-                        continue;
+                        result = SpecificStep(Resolver.Resolve(this));
+                        if (result == SimulationStepResult.Success)
+                            continue;
+
+                        break;
                 }
 
                 return result;
@@ -185,9 +197,28 @@ namespace Automata.Simulation
 
             return SimulationStepResult.Timeout;
         }
+
+        /// <summary>
+        /// Returns the list of applicable transitions from the current state.
+        /// </summary>
+        /// <returns>The list of applicable transitions.</returns>
+        public IEnumerable<IStateTransition> GetApplicableTransitions()
+        {
+            var applicableTransitions = new List<IStateTransition>();
+
+            foreach (var transition in CurrentState.OutTransitions)
+                if (transition.HandlesSymbol(CurrentInputSymbol))
+                    applicableTransitions.Add(transition);
+
+            return applicableTransitions;
+        }
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Handles the internal process of stepping.
+        /// </summary>
+        /// <param name="transition">The selected transition to handle.</param>
         private void StepInternal(IStateTransition transition)
         {
             if (transition == null)

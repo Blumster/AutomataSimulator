@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using WinForm = System.Windows.Forms.Form;
@@ -11,6 +12,7 @@ namespace Automata.Simulator.Form
     using Enum;
     using IO;
     using Resolver;
+    
 
     public partial class MainWindow : WinForm
     {
@@ -76,30 +78,17 @@ namespace Automata.Simulator.Form
         #region Manage Controls
         private void NewButton_Click(object sender, EventArgs e)
         {
-            if (Graph != null && !Graph.IsSaved)
-            {
-                var mBoxResult = MessageBox.Show("A jelenlegi automata nincs elmentve. Szertné menteni?", "Mentés", MessageBoxButtons.YesNoCancel);
-                if (mBoxResult == DialogResult.Yes)
-                {
-                    SaveAutomata();
-
-                    if (!Graph.IsSaved)
-                        return;
-                }
-                else if (mBoxResult == DialogResult.No)
-                {
-                    Graph = null;
-                    DrawGraph();
-                }
-                else
-                    return;
-            }
+            if (!SaveGraphIfNeeded())
+                return;
 
             using (var form = new CreateAutomataForm())
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     Graph = new AutomataGraph(form.CreateAutomata(), true);
+                    Graph.OnRedraw += DrawGraph;
+
+                    SetupUI();
 
                     DrawGraph();
                 }
@@ -108,13 +97,16 @@ namespace Automata.Simulator.Form
 
         private void LoadButton_Click(object sender, EventArgs e)
         {
+            if (!SaveGraphIfNeeded())
+                return;
+
             if (loadAutomataDialog.ShowDialog() == DialogResult.OK)
             {
                 Graph = null;
 
                 try
                 {
-                    Graph = AutomataLoader.a(loadAutomataDialog.FileName);
+                    Graph = AutomataLoader.Load(loadAutomataDialog.FileName);
                 }
                 catch
                 {
@@ -127,10 +119,6 @@ namespace Automata.Simulator.Form
                 }
 
                 Graph.OnRedraw += DrawGraph;
-
-                //Graph.StartSimulation(SimulationStepMethod.Manual, new object[] { 'a', 'a', 'a' }, 10);
-
-                //Text = "\u25B6 " + Text;
 
                 SetupUI();
 
@@ -203,6 +191,11 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Simulation Controls
+        /// <summary>
+        /// Handles the start simulation button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void StartNewSimulation_Click(object sender, EventArgs e)
         {
             using (var simulationSettingsForm = new SimulationSettingsForm())
@@ -217,19 +210,28 @@ namespace Automata.Simulator.Form
                 else if (RandomResolver.Equals(AmbiguityResolverComboBox.SelectedItem))
                     resolver = new RandomResolver();
 
+                Graph.OnSimulationFinished += OnSimulationFinished;
                 Graph.StartSimulation(GetStepType(), simulationSettingsForm.GetInputArray(), SimulationSpeedTrackBar.Value, resolver);
             }
-
-            Text = "\u25B6 " + Text;
 
             SetupUI();
         }
 
+        /// <summary>
+        /// Handles the stop simulation button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void StopSimulationButton_Click(object sender, EventArgs e)
         {
             StopSimulation();
         }
 
+        /// <summary>
+        /// Handles the simulation step button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void SimulationStepButton_Click(object sender, EventArgs e)
         {
             var result = Graph.StepSimulation();
@@ -239,11 +241,21 @@ namespace Automata.Simulator.Form
             SimulationStepButton.Enabled = false;
         }
 
+        /// <summary>
+        /// Handles the step method combobox's change event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void SimulationStepMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetupUI();
         }
 
+        /// <summary>
+        /// Handles the simulation speed track bar's scroll event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void SimulationSpeedTrackBar_Scroll(object sender, EventArgs e)
         {
             SimulationSpeedLabel.Text = SimulationSpeedTrackBar.Value.ToString();
@@ -252,8 +264,40 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Asks the user to save the current edited automata, if it wasn't saved already.
+        /// </summary>
+        /// <returns>True, if the process was successful.</returns>
+        private bool SaveGraphIfNeeded()
+        {
+            if (Graph == null || Graph.IsSaved)
+                return true;
+
+            var mBoxResult = MessageBox.Show("A jelenlegi automata nincs elmentve. Szertné menteni?", "Mentés", MessageBoxButtons.YesNoCancel);
+            if (mBoxResult == DialogResult.Yes)
+            {
+                SaveAutomata();
+
+                if (!Graph.IsSaved)
+                    return false;
+            }
+            else if (mBoxResult == DialogResult.No)
+            {
+                Graph = null;
+
+                DrawGraph();
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Updates the UI controls's visibility and enabledness based on the current state of the form.
+        /// </summary>
         private void SetupUI()
         {
+            SimulationResultLabel.Visible = false;
+
             if (Graph == null)
             {
                 ManageGroupBox.Enabled = true;
@@ -292,8 +336,24 @@ namespace Automata.Simulator.Form
                 StopSimulationButton.Enabled = true;
                 SimulationStepMethodComboBox.Enabled = false;
                 SimulationSpeedTrackBar.Enabled = false;
-                SimulationStepButton.Enabled = true;
+                SimulationStepButton.Enabled = GetStepType() == SimulationStepMethod.Manual;
                 AmbiguityResolverComboBox.Enabled = false;
+
+                if (Graph.Simulation.IsFinished)
+                {
+                    SimulationResultLabel.Visible = true;
+
+                    if (Graph.Simulation.IsInputAccepted)
+                    {
+                        SimulationResultLabel.Text = "Az automata elfogadta a szót.";
+                        SimulationResultLabel.ForeColor = Color.Green;
+                    }
+                    else
+                    {
+                        SimulationResultLabel.Text = "Az automata nem fogadta el a szót.";
+                        SimulationResultLabel.ForeColor = Color.Red;
+                    }
+                }
             }
 
             var isManual = Manual.Equals(SimulationStepMethodComboBox.SelectedItem);
@@ -330,25 +390,41 @@ namespace Automata.Simulator.Form
             }
         }
 
+        /// <summary>
+        /// Handles saving the automata.
+        /// </summary>
         private void SaveAutomata()
         {
             if (saveAutomataDialog.ShowDialog() == DialogResult.OK)
                 Graph.IsSaved = AutomataSaver.Save(saveAutomataDialog.FileName, Graph.Automata);
         }
 
+        /// <summary>
+        /// Stops the current simulation.
+        /// </summary>
         private void StopSimulation()
         {
             if (Graph == null)
                 return;
 
             Graph.StopSimulation();
-
-            Text = Text.Substring(Text.IndexOf(' ')).Trim();
+            Graph.OnSimulationFinished -= OnSimulationFinished;
 
             SetupUI();
         }
 
-        public void DrawGraph()
+        /// <summary>
+        /// This method is called when the simulation is finished.
+        /// </summary>
+        private void OnSimulationFinished()
+        {
+            SetupUI();
+        }
+
+        /// <summary>
+        /// Draws the graph on the DrawPanel's graphic surface.
+        /// </summary>
+        private void DrawGraph()
         {
             if (WindowState == FormWindowState.Minimized)
                 return;
@@ -363,6 +439,10 @@ namespace Automata.Simulator.Form
                 Graph.DrawAutomata(graphics, 0, 0, DrawPanel.Width, DrawPanel.Height);
         }
 
+        /// <summary>
+        /// Determines the step method based on the selected item from the step method combobox.
+        /// </summary>
+        /// <returns></returns>
         private SimulationStepMethod GetStepType()
         {
             if (Instant.Equals(SimulationStepMethodComboBox.SelectedItem))

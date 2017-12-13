@@ -7,6 +7,11 @@ namespace Automata.AmbiguityResolver
 
     public class RandomResolver : IAmbiguityResolver
     {
+        /// <summary>
+        /// Resolves an ambigiuous simulation.
+        /// </summary>
+        /// <param name="simulation">The current simulation instance.</param>
+        /// <returns>The resolved transition to apply.</returns>
         public IStateTransition Resolve(ISimulation simulation)
         {
             var trans = simulation.GetApplicableTransitions();

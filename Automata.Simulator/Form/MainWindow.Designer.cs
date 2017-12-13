@@ -41,6 +41,8 @@
             this.DeleteStateButton = new System.Windows.Forms.Button();
             this.NewTransitionButton = new System.Windows.Forms.Button();
             this.SimulationGroupBox = new System.Windows.Forms.GroupBox();
+            this.AmbiguityMethodLabel = new System.Windows.Forms.Label();
+            this.AmbiguityResolverComboBox = new System.Windows.Forms.ComboBox();
             this.SimulationSpeedLabel = new System.Windows.Forms.Label();
             this.SimulationSpeedDescriptionLabel = new System.Windows.Forms.Label();
             this.SimulationSpeedTrackBar = new System.Windows.Forms.TrackBar();
@@ -58,8 +60,7 @@
             this.StateCountLabel = new System.Windows.Forms.Label();
             this.StateCountDescriptionLabel = new System.Windows.Forms.Label();
             this.TransitionCountDescriptionLabel = new System.Windows.Forms.Label();
-            this.AmbiguityResolverComboBox = new System.Windows.Forms.ComboBox();
-            this.AmbiguityMethodLabel = new System.Windows.Forms.Label();
+            this.SimulationResultLabel = new System.Windows.Forms.Label();
             this.ManageGroupBox.SuspendLayout();
             this.EditGroupBox.SuspendLayout();
             this.SimulationGroupBox.SuspendLayout();
@@ -113,11 +114,13 @@
             // loadAutomataDialog
             // 
             this.loadAutomataDialog.Filter = "Gráfok|*.gml";
+            this.loadAutomataDialog.Title = "Megnyitás";
             // 
             // saveAutomataDialog
             // 
             this.saveAutomataDialog.DefaultExt = "gml";
             this.saveAutomataDialog.Filter = "Gráfok|*.gml";
+            this.saveAutomataDialog.Title = "Mentés";
             // 
             // DrawPanel
             // 
@@ -186,6 +189,7 @@
             // SimulationGroupBox
             // 
             this.SimulationGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SimulationGroupBox.Controls.Add(this.SimulationResultLabel);
             this.SimulationGroupBox.Controls.Add(this.AmbiguityMethodLabel);
             this.SimulationGroupBox.Controls.Add(this.AmbiguityResolverComboBox);
             this.SimulationGroupBox.Controls.Add(this.SimulationSpeedLabel);
@@ -202,6 +206,24 @@
             this.SimulationGroupBox.TabIndex = 4;
             this.SimulationGroupBox.TabStop = false;
             this.SimulationGroupBox.Text = "Szimuláció";
+            // 
+            // AmbiguityMethodLabel
+            // 
+            this.AmbiguityMethodLabel.AutoSize = true;
+            this.AmbiguityMethodLabel.Location = new System.Drawing.Point(3, 126);
+            this.AmbiguityMethodLabel.Name = "AmbiguityMethodLabel";
+            this.AmbiguityMethodLabel.Size = new System.Drawing.Size(133, 13);
+            this.AmbiguityMethodLabel.TabIndex = 10;
+            this.AmbiguityMethodLabel.Text = "Lépés feloldásának módja:";
+            // 
+            // AmbiguityResolverComboBox
+            // 
+            this.AmbiguityResolverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.AmbiguityResolverComboBox.FormattingEnabled = true;
+            this.AmbiguityResolverComboBox.Location = new System.Drawing.Point(6, 142);
+            this.AmbiguityResolverComboBox.Name = "AmbiguityResolverComboBox";
+            this.AmbiguityResolverComboBox.Size = new System.Drawing.Size(182, 21);
+            this.AmbiguityResolverComboBox.TabIndex = 9;
             // 
             // SimulationSpeedLabel
             // 
@@ -284,6 +306,7 @@
             // 
             // PropertiesGroupBox
             // 
+            this.PropertiesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.PropertiesGroupBox.Controls.Add(this.AlphabetLabel);
             this.PropertiesGroupBox.Controls.Add(this.AlphabetDescriptionLabel);
             this.PropertiesGroupBox.Controls.Add(this.TypeLabel);
@@ -371,23 +394,16 @@
             this.TransitionCountDescriptionLabel.TabIndex = 0;
             this.TransitionCountDescriptionLabel.Text = "Átmenetek száma:";
             // 
-            // AmbiguityResolverComboBox
+            // SimulationResultLabel
             // 
-            this.AmbiguityResolverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.AmbiguityResolverComboBox.FormattingEnabled = true;
-            this.AmbiguityResolverComboBox.Location = new System.Drawing.Point(6, 142);
-            this.AmbiguityResolverComboBox.Name = "AmbiguityResolverComboBox";
-            this.AmbiguityResolverComboBox.Size = new System.Drawing.Size(182, 21);
-            this.AmbiguityResolverComboBox.TabIndex = 9;
-            // 
-            // AmbiguityMethodLabel
-            // 
-            this.AmbiguityMethodLabel.AutoSize = true;
-            this.AmbiguityMethodLabel.Location = new System.Drawing.Point(3, 126);
-            this.AmbiguityMethodLabel.Name = "AmbiguityMethodLabel";
-            this.AmbiguityMethodLabel.Size = new System.Drawing.Size(133, 13);
-            this.AmbiguityMethodLabel.TabIndex = 10;
-            this.AmbiguityMethodLabel.Text = "Lépés feloldásának módja:";
+            this.SimulationResultLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.SimulationResultLabel.ForeColor = System.Drawing.Color.Green;
+            this.SimulationResultLabel.Location = new System.Drawing.Point(6, 238);
+            this.SimulationResultLabel.Name = "SimulationResultLabel";
+            this.SimulationResultLabel.Size = new System.Drawing.Size(182, 44);
+            this.SimulationResultLabel.TabIndex = 11;
+            this.SimulationResultLabel.Text = "Az automata elfogadta a szót.";
+            this.SimulationResultLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainWindow
             // 
@@ -449,6 +465,7 @@
         private System.Windows.Forms.Label AlphabetDescriptionLabel;
         private System.Windows.Forms.ComboBox AmbiguityResolverComboBox;
         private System.Windows.Forms.Label AmbiguityMethodLabel;
+        private System.Windows.Forms.Label SimulationResultLabel;
     }
 }
 
