@@ -12,8 +12,10 @@ namespace Automata.Simulator.Form
     using Enum;
     using IO;
     using Resolver;
-    
 
+    /// <summary>
+    /// The class of the main window, which handles the editing and simulation of automatas.
+    /// </summary>
     public partial class MainWindow : WinForm
     {
         #region Constants
@@ -27,10 +29,16 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Fields
+        /// <summary>
+        /// A private field for storing the graph representation instance.
+        /// </summary>
         private AutomataGraph _graph;
         #endregion
 
         #region Properties
+        /// <summary>
+        /// A getter and setter to the private _graph field.
+        /// </summary>
         AutomataGraph Graph
         {
             get
@@ -47,6 +55,9 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Creates a new instance of the main window.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -69,6 +80,11 @@ namespace Automata.Simulator.Form
 
         #region Control event handlers
         #region MainWindow
+        /// <summary>
+        /// Handles the form's resize event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void MainWindow_Resize(object sender, EventArgs e)
         {
             DrawGraph();
@@ -76,6 +92,11 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Manage Controls
+        /// <summary>
+        /// Handles the new button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void NewButton_Click(object sender, EventArgs e)
         {
             if (!SaveGraphIfNeeded())
@@ -95,6 +116,11 @@ namespace Automata.Simulator.Form
             }
         }
 
+        /// <summary>
+        /// Handles the load button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void LoadButton_Click(object sender, EventArgs e)
         {
             if (!SaveGraphIfNeeded())
@@ -126,6 +152,11 @@ namespace Automata.Simulator.Form
             }
         }
 
+        /// <summary>
+        /// Handles the save button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void SaveButton_Click(object sender, EventArgs e)
         {
             SaveAutomata();
@@ -133,6 +164,11 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Edit Controls
+        /// <summary>
+        /// Handles the new state button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void NewStateButton_Click(object sender, EventArgs e)
         {
             using (var newStateForm = new NewStateForm(Graph.Automata))
@@ -147,6 +183,11 @@ namespace Automata.Simulator.Form
             SetupUI();
         }
 
+        /// <summary>
+        /// Handles the new transition button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void NewTransitionButton_Click(object sender, EventArgs e)
         {
             using (var newTransitionForm = new NewTransitionForm(Graph.Automata))
@@ -161,6 +202,11 @@ namespace Automata.Simulator.Form
             SetupUI();
         }
 
+        /// <summary>
+        /// Handles the delete state button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DeleteStateButton_Click(object sender, EventArgs e)
         {
             using (var deleteStateForm = new DeleteStateForm(Graph.Automata))
@@ -175,6 +221,11 @@ namespace Automata.Simulator.Form
             SetupUI();
         }
 
+        /// <summary>
+        /// Handles the delete transition button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DeleteTransitionButton_Click(object sender, EventArgs e)
         {
             using (var deleteTransitionForm = new DeleteTransitionForm(Graph.Automata))

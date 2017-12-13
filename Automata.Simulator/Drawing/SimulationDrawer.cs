@@ -1,50 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Automata.Simulator.Drawing
 {
+    /// <summary>
+    /// A helper class that draws the simulation input symbol bar on the given graphic surface.
+    /// </summary>
     public class SimulationDrawer
     {
+        #region Constants
         public const int SimulationBarHeight = 50;
         public const int InputSymbolTopOffset = 5;
         public const int InputDisplayHeight = 40;
         public const int InputDisplayWidth = 40;
         public const int InputSymbolHistoryCount = 5;
+        #endregion
 
+        #region Properties
+        /// <summary>
+        /// The graph representation of the automata.
+        /// </summary>
         public AutomataGraph Graph { get; }
+        #endregion
 
+        #region Constructors
+        /// <summary>
+        /// Creates a new simulation drawer for the given graph representation.
+        /// </summary>
+        /// <param name="graph">The graph representation.</param>
         public SimulationDrawer(AutomataGraph graph)
         {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph), "The graph can not be null!");
+            Graph = graph ?? throw new ArgumentNullException(nameof(graph), "The graph representation can not be null!");
         }
+        #endregion
 
+        #region Methods
         public void DrawSimulationData(Graphics graphics, int left, int top, int width)
         {
             if (Graph.Simulation == null)
                 throw new Exception("The simulation data can't be drawn while there is no simulation in progress!");
 
             var barTop = top + InputSymbolTopOffset;
-            var barLeft = left;
+            var barLeft = left + (width % InputDisplayWidth) / 2;
 
             var inputCount = width / InputDisplayWidth;
-
-            var rem = width % InputDisplayWidth;
-            barLeft += rem / 2;
-
             var currentInputBox = inputCount / 2 - 1;
-
-            
-            var symbolCount = Graph.Simulation.Input.Length;
-            var currentSymbolIndex = Graph.Simulation.CurrentInputIndex;
-            var indexDiff = currentInputBox - currentSymbolIndex;
+            var indexDiff = currentInputBox - Graph.Simulation.CurrentInputIndex;
 
             var symbols = new string[inputCount];
 
-            for (var i = 0; i < symbolCount && i + indexDiff < symbols.Length; ++i)
+            for (var i = 0; i < Graph.Simulation.Input.Length && i + indexDiff < symbols.Length; ++i)
             {
                 if (i + indexDiff < 0)
                     continue;
@@ -78,5 +83,6 @@ namespace Automata.Simulator.Drawing
                 }
             }
         }
+        #endregion
     }
 }

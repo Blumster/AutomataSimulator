@@ -24,17 +24,22 @@ namespace Automata.Interface
         IState TargetState { get; }
 
         /// <summary>
-        /// The string of the label of this transition.
-        /// </summary>
-        string Label { get; }
-
-        /// <summary>
         /// The symbols on which this transition transitions to the target state.
         /// </summary>
         object[] Symbols { get; }
+
+        /// <summary>
+        /// The string of the label of this transition.
+        /// </summary>
+        string Label { get; }
         #endregion
 
         #region Transition
+        /// <summary>
+        /// Checks if the transitions handles the given symbol.
+        /// </summary>
+        /// <param name="symbol">The symbolt to check.</param>
+        /// <returns>True, if the transition handles the symbol.</returns>
         bool HandlesSymbol(object symbol);
         #endregion
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Reflection;
 using System.Timers;
 
@@ -12,15 +14,15 @@ using DrawingEdge = Microsoft.Msagl.Drawing.Edge;
 
 namespace Automata.Simulator.Drawing
 {
-    using AmbiguityResolver;
     using Enum;
     using Event;
     using Interface;
     using Microsoft.Msagl.GraphViewerGdi;
     using Simulation;
-    using System.Drawing.Drawing2D;
-    using System.Drawing.Text;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class AutomataGraph : Graph
     {
         #region Constants
@@ -423,16 +425,12 @@ namespace Automata.Simulator.Drawing
             graphics.CompositingQuality = CompositingQuality.HighQuality;
             graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-            if (Simulation != null)
-            {
-                graphics.Clear(System.Drawing.Color.White);
+            graphics.Clear(System.Drawing.Color.White);
 
+            if (Simulation != null)
                 SimulationDrawer.DrawSimulationData(graphics, left, top + height - SimulationDrawer.SimulationBarHeight, width);
 
-                renderer.Render(graphics, left, top, width, height - SimulationDrawer.SimulationBarHeight);
-            }
-            else
-                renderer.Render(graphics, left, top, width, height);
+            renderer.Render(graphics, left, top, width, height - SimulationDrawer.SimulationBarHeight);
         }
 
         public void SetupState(State state)

@@ -7,34 +7,51 @@ namespace Automata.Simulation
     using Enum;
     using Interface;
 
+    /// <summary>
+    /// A simple simulation implementation that transitions only based on the next input symbol.
+    /// </summary>
     public class SimpleSimulation : ISimulation
     {
-        #region Fields
-        private int _index = 0;
-        #endregion
-
         #region Properties
+        /// <summary>
+        /// The automata instance being simulated.
+        /// </summary>
         public IAutomata Automata { get; }
+
+        /// <summary>
+        /// The ambiguity resolver instance.
+        /// </summary>
         public IAmbiguityResolver Resolver { get; set; }
+
+        /// <summary>
+        /// The current active state of the simulation.
+        /// </summary>
         public IState CurrentState { get; private set; }
+
+        /// <summary>
+        /// The array that contains the input symbols.
+        /// </summary>
         public object[] Input { get; }
 
+        /// <summary>
+        /// The index of the current symbol being handled.
+        /// </summary>
+        public int CurrentInputIndex { get; set; }
+
+        /// <summary>
+        /// The current symbol that is being handled.
+        /// </summary>
         public object CurrentInputSymbol
         {
             get
             {
-                return _index < Input.Length ? Input[_index] : null;
+                return CurrentInputIndex < Input.Length ? Input[CurrentInputIndex] : null;
             }
         }
 
-        public int CurrentInputIndex
-        {
-            get
-            {
-                return _index;
-            }
-        }
-
+        /// <summary>
+        /// Determines, if the simulation is finished.
+        /// </summary>
         public bool IsFinished
         {
             get
@@ -54,6 +71,9 @@ namespace Automata.Simulation
             }
         }
 
+        /// <summary>
+        /// Determines, if the current state is an accept state.
+        /// </summary>
         public bool IsInAcceptState
         {
             get
@@ -62,6 +82,9 @@ namespace Automata.Simulation
             }
         }
 
+        /// <summary>
+        /// Determinies, if the current state and current input symbol creates an ambiguous state.
+        /// </summary>
         public bool IsInAmbiguousState
         {
             get
@@ -105,7 +128,7 @@ namespace Automata.Simulation
         /// <returns>The step result for the current input symbol.</returns>
         public SimulationStepResult CanStep()
         {
-            if (Input.Length - _index == 0)
+            if (Input.Length - CurrentInputIndex == 0)
                 return SimulationStepResult.NoMoreInputSymbols;
 
             var applicableTransitions = GetApplicableTransitions();
@@ -232,7 +255,7 @@ namespace Automata.Simulation
 
             CurrentState = transition.TargetState;
 
-            ++_index;
+            ++CurrentInputIndex;
 
             OnStep?.Invoke();
         }

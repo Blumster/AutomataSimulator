@@ -10,7 +10,7 @@ namespace Automata.Interface
     {
         #region Properties
         /// <summary>
-        /// 
+        /// The unique id of the state.
         /// </summary>
         string Id { get; }
 
@@ -24,16 +24,24 @@ namespace Automata.Interface
         /// </summary>
         bool IsStartState { get; set; }
 
-
         /// <summary>
         /// Determines if this state is an accept state.
         /// </summary>
         bool IsAcceptState { get; set; }
-        #endregion
 
-        #region Transitions
+        /// <summary>
+        /// The list of loop transitions.
+        /// </summary>
         IEnumerable<IStateTransition> SelfTransitions { get; }
+
+        /// <summary>
+        /// The list of incoming transitions.
+        /// </summary>
         IEnumerable<IStateTransition> InTransitions { get; }
+
+        /// <summary>
+        /// The list of outgoing transitions
+        /// </summary>
         IEnumerable<IStateTransition> OutTransitions { get; }
         #endregion
 

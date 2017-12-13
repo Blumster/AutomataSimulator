@@ -32,14 +32,14 @@ namespace Automata.Interface
         object[] Input { get; }
 
         /// <summary>
-        /// The current symbol that is being handled.
-        /// </summary>
-        object CurrentInputSymbol { get; }
-
-        /// <summary>
         /// The index of the current symbol being handled.
         /// </summary>
         int CurrentInputIndex { get; }
+
+        /// <summary>
+        /// The current symbol that is being handled.
+        /// </summary>
+        object CurrentInputSymbol { get; }
 
         /// <summary>
         /// Determines, if the simulation is finished.
