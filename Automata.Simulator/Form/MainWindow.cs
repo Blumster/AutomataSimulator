@@ -338,6 +338,8 @@ namespace Automata.Simulator.Form
 
                 DrawGraph();
             }
+            else if (mBoxResult == DialogResult.Cancel)
+                return false;
 
             return true;
         }
