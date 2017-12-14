@@ -631,9 +631,9 @@ namespace Automata.Simulator.Drawing
             if (state.IsStartState)
             {
                 if (state.Id.Length > 2)
-                    state.Label.Width -= 6;
+                    state.Label.Width -= 3;
                 else
-                    state.Label.Width -= 5;
+                    state.Label.Width -= 2;
             }
 
             var curve = new Curve();
@@ -648,7 +648,7 @@ namespace Automata.Simulator.Drawing
             if (state.IsStartState)
             {
                 AddDiscontinousSegment(curve, new LineSegment(center.X - 12, center.Y - 2, center.X - 10, center.Y));
-                AddDiscontinousSegment(curve, new LineSegment(center.X - 15, center.Y, center.X - 10, center.Y));
+                AddDiscontinousSegment(curve, new LineSegment(center.X - 12, center.Y - 2, center.X - 12, center.Y + 2));
                 AddDiscontinousSegment(curve, new LineSegment(center.X - 12, center.Y + 2, center.X - 10, center.Y));
             }
 
