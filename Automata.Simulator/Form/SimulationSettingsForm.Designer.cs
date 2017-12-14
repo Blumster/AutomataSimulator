@@ -37,7 +37,7 @@
             // CancelSimulationButton
             // 
             this.CancelSimulationButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelSimulationButton.Location = new System.Drawing.Point(116, 226);
+            this.CancelSimulationButton.Location = new System.Drawing.Point(12, 52);
             this.CancelSimulationButton.Name = "CancelSimulationButton";
             this.CancelSimulationButton.Size = new System.Drawing.Size(75, 23);
             this.CancelSimulationButton.TabIndex = 0;
@@ -47,7 +47,7 @@
             // 
             // StartSimulationButton
             // 
-            this.StartSimulationButton.Location = new System.Drawing.Point(197, 226);
+            this.StartSimulationButton.Location = new System.Drawing.Point(197, 52);
             this.StartSimulationButton.Name = "StartSimulationButton";
             this.StartSimulationButton.Size = new System.Drawing.Size(75, 23);
             this.StartSimulationButton.TabIndex = 1;
@@ -58,17 +58,17 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 9);
+            this.label1.Location = new System.Drawing.Point(9, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(34, 13);
+            this.label1.Size = new System.Drawing.Size(53, 13);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Input:";
+            this.label1.Text = "Input szó:";
             // 
             // SimulationInputTextBox
             // 
-            this.SimulationInputTextBox.Location = new System.Drawing.Point(13, 26);
+            this.SimulationInputTextBox.Location = new System.Drawing.Point(12, 26);
             this.SimulationInputTextBox.Name = "SimulationInputTextBox";
-            this.SimulationInputTextBox.Size = new System.Drawing.Size(259, 20);
+            this.SimulationInputTextBox.Size = new System.Drawing.Size(260, 20);
             this.SimulationInputTextBox.TabIndex = 3;
             // 
             // SimulationSettingsForm
@@ -77,7 +77,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CancelSimulationButton;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(284, 82);
             this.ControlBox = false;
             this.Controls.Add(this.SimulationInputTextBox);
             this.Controls.Add(this.label1);
@@ -86,6 +86,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "SimulationSettingsForm";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Szimuláció indítása";
             this.ResumeLayout(false);
             this.PerformLayout();

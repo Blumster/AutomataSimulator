@@ -10,7 +10,6 @@ using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Drawing;
 
 using MsaglColor = Microsoft.Msagl.Drawing.Color;
-using DrawingEdge = Microsoft.Msagl.Drawing.Edge;
 
 namespace Automata.Simulator.Drawing
 {
@@ -21,7 +20,7 @@ namespace Automata.Simulator.Drawing
     using Simulation;
 
     /// <summary>
-    /// 
+    /// Defines a graph for the given automata to draw it.
     /// </summary>
     public class AutomataGraph : Graph
     {
@@ -31,24 +30,60 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Static fields
+        /// <summary>
+        /// A cache for the segments field reflection data.
+        /// </summary>
         private static FieldInfo SegmentsFieldInfo = null;
         #endregion
 
         #region Fields
+        /// <summary>
+        /// Variable if the event should be registered for the automata.
+        /// </summary>
         private bool _registerEvents = false;
+
+        /// <summary>
+        /// The timer for timed stepping.
+        /// </summary>
         private Timer _stepTimer = null;
+
+        /// <summary>
+        /// The automata to be drawn.
+        /// </summary>
         private IAutomata _automata;
+
+        /// <summary>
+        /// The drawing state to logic state map.
+        /// </summary>
         private IDictionary<IState, State> _logicToDrawingStateMap = new Dictionary<IState, State>();
+
+        /// <summary>
+        /// The drawing edte to logic transition map.
+        /// </summary>
         private IDictionary<IStateTransition, Edge> _logicToDrawingTransitionMap = new Dictionary<IStateTransition, Edge>();
         #endregion
 
         #region Events
+        /// <summary>
+        /// Defines an event handler that is called when a redraw is needed.
+        /// </summary>
         public event Action OnRedraw;
+
+        /// <summary>
+        /// Defines an event handler that is called when the simulation finished.
+        /// </summary>
         public event Action OnSimulationFinished;
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Gets or sets, if the automata that is currently edited should be saved.
+        /// </summary>
         public bool IsSaved { get; set; }
+
+        /// <summary>
+        /// Gets or sets, if the events of the automata should be registered.
+        /// </summary>
         public bool RegisterEvents
         {
             get
@@ -72,6 +107,9 @@ namespace Automata.Simulator.Drawing
             }
         }
 
+        /// <summary>
+        /// Gets or sets the automata that is drawn.
+        /// </summary>
         public IAutomata Automata
         {
             get
@@ -93,11 +131,23 @@ namespace Automata.Simulator.Drawing
             }
         }
 
+        /// <summary>
+        /// The current simulation that is ran on the automata.
+        /// </summary>
         public ISimulation Simulation { get; private set; }
+
+        /// <summary>
+        /// The simulation drawer instance that draws the simulation data on the graphical surface.
+        /// </summary>
         public SimulationDrawer SimulationDrawer { get; }
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Creates a new graph representation for the given automata.
+        /// </summary>
+        /// <param name="automata">The automata instance.</param>
+        /// <param name="registerEvents">If true, the automata's events will be registered.</param>
         public AutomataGraph(IAutomata automata, bool registerEvents = false)
         {
             Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
@@ -108,6 +158,9 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Event handling
+        /// <summary>
+        /// Register to the automata's events.
+        /// </summary>
         private void SetupEvents()
         {
             if (!RegisterEvents)
@@ -121,6 +174,9 @@ namespace Automata.Simulator.Drawing
             Automata.OnTransitionRemove += OnTransitionRemove;
         }
 
+        /// <summary>
+        /// Unregister from the automata's events.
+        /// </summary>
         private void TeardownEvents()
         {
             if (!RegisterEvents)
@@ -134,11 +190,21 @@ namespace Automata.Simulator.Drawing
             Automata.OnTransitionRemove -= OnTransitionRemove;
         }
 
+        /// <summary>
+        /// Handles the state add event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="args">The event arguments.</param>
         private void OnStateAdd(object sender, StateEventArgs args)
         {
             AddState(args.State);
         }
 
+        /// <summary>
+        /// Handles the state update event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="args">The event arguments.</param>
         private void OnStateUpdate(object sender, StateEventArgs args)
         {
             if (NodeMap[args.State.Id] is State drawingState)
@@ -147,16 +213,31 @@ namespace Automata.Simulator.Drawing
             Redraw();
         }
 
+        /// <summary>
+        /// Handles the state remove event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="args">The event arguments.</param>
         private void OnStateRemove(object sender, StateEventArgs args)
         {
             RemoveState(args.State);
         }
 
+        /// <summary>
+        /// Handles the transition add event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="args">The event arguments.</param>
         private void OnTransitionAdd(object sender, TransitionEventArgs args)
         {
             AddTransition(args.Transition);
         }
 
+        /// <summary>
+        /// Handles the transition update event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="args">The event arguments.</param>
         private void OnTransitionUpdate(object sender, TransitionEventArgs args)
         {
             RemoveTransition(args.Transition);
@@ -165,6 +246,11 @@ namespace Automata.Simulator.Drawing
             Redraw();
         }
 
+        /// <summary>
+        /// Handles the transition remove event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="args">The event arguments.</param>
         private void OnTransitionRemove(object sender, TransitionEventArgs args)
         {
             RemoveTransition(args.Transition);
@@ -172,8 +258,21 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Simulation
-        public void StartSimulation(SimulationStepMethod stepType, object[] input, int timedDelaySeconds, IAmbiguityResolver resolver = null)
+        /// <summary>
+        /// Starts a new simulation based on the given parameters on the automata.
+        /// </summary>
+        /// <param name="stepMethod">The simulation step method.</param>
+        /// <param name="input">The input symbols array.</param>
+        /// <param name="timedDelaySeconds">The delay of the timer in seconds.</param>
+        /// <param name="resolver">The ambiguity resolver instance.</param>
+        public void StartSimulation(SimulationStepMethod stepMethod, object[] input, int timedDelaySeconds, IAmbiguityResolver resolver = null)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input), "The input symbols array can not be null!");
+
+            if (Simulation != null)
+                throw new Exception("You must stop the previous simulation!");
+
             var filteredSymbols = new List<object>();
 
             foreach (var symbol in input)
@@ -185,7 +284,7 @@ namespace Automata.Simulator.Drawing
                 Resolver = resolver
             };
 
-            switch (stepType)
+            switch (stepMethod)
             {
                 case SimulationStepMethod.Manual:
                     Simulation.OnStep += OnSimulationStep;
@@ -212,6 +311,11 @@ namespace Automata.Simulator.Drawing
             ColorizeCurrentStateAndEdges();
         }
 
+        /// <summary>
+        /// Handles the timer's elapsed event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void StepTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (StepSimulation() != SimulationStepResult.Success)
@@ -224,8 +328,14 @@ namespace Automata.Simulator.Drawing
             }
         }
 
+        /// <summary>
+        /// Stops the current simulation.
+        /// </summary>
         public void StopSimulation()
         {
+            if (Simulation == null)
+                throw new Exception("Can't stop a non-existant simulation!");
+
             Simulation.OnStep -= OnSimulationStep;
             Simulation = null;
 
@@ -240,6 +350,10 @@ namespace Automata.Simulator.Drawing
             Redraw();
         }
 
+        /// <summary>
+        /// Does a step in the current simulation.
+        /// </summary>
+        /// <returns></returns>
         public SimulationStepResult StepSimulation()
         {
             if (Simulation == null)
@@ -266,6 +380,9 @@ namespace Automata.Simulator.Drawing
             return result;
         }
 
+        /// <summary>
+        /// Handles the OnStep event of the simulation.
+        /// </summary>
         private void OnSimulationStep()
         {
             ClearColors();
@@ -273,6 +390,9 @@ namespace Automata.Simulator.Drawing
             ColorizeCurrentStateAndEdges();
         }
 
+        /// <summary>
+        /// Colorizes the states and transitions based on the simulation's current state.
+        /// </summary>
         private void ColorizeCurrentStateAndEdges()
         {
             if (!_logicToDrawingStateMap.ContainsKey(Simulation.CurrentState))
@@ -305,6 +425,9 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Graph
+        /// <summary>
+        /// Sets up the graph representation based on the automata.
+        /// </summary>
         private void SetupGraph()
         {
             foreach (var logicState in Automata.States)
@@ -314,6 +437,9 @@ namespace Automata.Simulator.Drawing
                 AddTransition(logicTransition);
         }
 
+        /// <summary>
+        /// Tears down the graph representation.
+        /// </summary>
         private void TeardownGraph()
         {
             foreach (var logicState in Automata.States)
@@ -326,6 +452,10 @@ namespace Automata.Simulator.Drawing
                 throw new Exception("The automata graph is in an invalid state!");
         }
 
+        /// <summary>
+        /// Adds a new state to the graph representation.
+        /// </summary>
+        /// <param name="state">The state instance.</param>
         private void AddState(IState state)
         {
             if (state == null)
@@ -347,6 +477,10 @@ namespace Automata.Simulator.Drawing
             Redraw();
         }
 
+        /// <summary>
+        /// Removes a state from the graph representation.
+        /// </summary>
+        /// <param name="state">The state instance.</param>
         private void RemoveState(IState state)
         {
             if (state == null)
@@ -364,10 +498,20 @@ namespace Automata.Simulator.Drawing
             Redraw();
         }
 
+        /// <summary>
+        /// Adds a new transition to the graph representation.
+        /// </summary>
+        /// <param name="transition">The transition instance.</param>
         private void AddTransition(IStateTransition transition)
         {
             if (transition == null)
                 throw new ArgumentNullException(nameof(transition), "The logic transition can not be null!");
+
+            if (transition.SourceState == null)
+                throw new ArgumentNullException(nameof(transition), "The logic transition's source state can not be null!");
+
+            if (transition.TargetState == null)
+                throw new ArgumentNullException(nameof(transition), "The logic transition's target state can not be null!");
 
             if (_logicToDrawingTransitionMap.ContainsKey(transition))
                 throw new ArgumentException("The graph already contains this transition!", nameof(transition));
@@ -391,6 +535,10 @@ namespace Automata.Simulator.Drawing
             Redraw();
         }
 
+        /// <summary>
+        /// Removes a transition from the graph representation.
+        /// </summary>
+        /// <param name="transition">The transition instance.</param>
         private void RemoveTransition(IStateTransition transition)
         {
             if (transition == null)
@@ -410,11 +558,22 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Drawing
+        /// <summary>
+        /// Redraws the automata.
+        /// </summary>
         public void Redraw()
         {
             OnRedraw?.Invoke();
         }
 
+        /// <summary>
+        /// Draws the automata on the given graphical surface.
+        /// </summary>
+        /// <param name="graphics">The graphical surface.</param>
+        /// <param name="left">The left coordinate to draw from.</param>
+        /// <param name="top">The top coordinate to draw from.</param>
+        /// <param name="width">The width of the surface.</param>
+        /// <param name="height">The height of the surface.</param>
         public void DrawAutomata(Graphics graphics, int left, int top, int width, int height)
         {
             var renderer = new GraphRenderer(this);
@@ -433,18 +592,31 @@ namespace Automata.Simulator.Drawing
             renderer.Render(graphics, left, top, width, height - SimulationDrawer.SimulationBarHeight);
         }
 
+        /// <summary>
+        /// Sets up the state with the default values.
+        /// </summary>
+        /// <param name="state">The state instance.</param>
         public void SetupState(State state)
         {
             state.Label.FontSize = StateLabelFontSize;
             state.DrawNodeDelegate = DrawNode;
         }
 
+        /// <summary>
+        /// Sets up the edge with the default values.
+        /// </summary>
+        /// <param name="edge">The edge instance</param>
         public void SetupEdge(Edge edge)
         {
             edge.Label.FontSize = EdgeLabelFontSize;
-            edge.DrawEdgeDelegate = DrawEdge;
         }
 
+        /// <summary>
+        /// Handles the drawing of the state.
+        /// </summary>
+        /// <param name="node">The drawing node.</param>
+        /// <param name="graphics">The graphic surface.</param>
+        /// <returns>False, so the default drawing method is not called.</returns>
         private bool DrawNode(Node node, object graphics)
         {
             var drawGraphics = graphics as Graphics;
@@ -485,16 +657,9 @@ namespace Automata.Simulator.Drawing
             return false;
         }
 
-        private bool DrawEdge(DrawingEdge drawingEdge, object graphics)
-        {
-            return false;
-            /*if (drawingEdge is Edge edge)
-            {
-                // TODO: kell ez?
-            }
-            return false;*/
-        }
-
+        /// <summary>
+        /// Removes every color from the graph, resetting back to the default black.
+        /// </summary>
         private void ClearColors()
         {
             foreach (var state in Nodes)
@@ -514,6 +679,11 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Reflection
+        /// <summary>
+        /// Helper function to add a new curve segment to a container.
+        /// </summary>
+        /// <param name="container">The curve container.</param>
+        /// <param name="curve">The curve segment.</param>
         private static void AddDiscontinousSegment(Curve container, ICurve curve)
         {
             if (SegmentsFieldInfo == null)
@@ -547,6 +717,11 @@ namespace Automata.Simulator.Drawing
             }
         }
 
+        /// <summary>
+        /// Returns the list of segments of a curve container.
+        /// </summary>
+        /// <param name="curve">The curve container.</param>
+        /// <returns>The hidden list of segments.</returns>
         private static IList<ICurve> GetSegmentsField(ICurve curve)
         {
             if (SegmentsFieldInfo == null)

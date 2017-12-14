@@ -31,14 +31,12 @@
             this.CreateButton = new System.Windows.Forms.Button();
             this.CloseButton = new System.Windows.Forms.Button();
             this.AlphabetTextBox = new System.Windows.Forms.TextBox();
-            this.TypeComboBox = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // CreateButton
             // 
-            this.CreateButton.Location = new System.Drawing.Point(12, 76);
+            this.CreateButton.Location = new System.Drawing.Point(12, 38);
             this.CreateButton.Name = "CreateButton";
             this.CreateButton.Size = new System.Drawing.Size(75, 23);
             this.CreateButton.TabIndex = 0;
@@ -49,7 +47,7 @@
             // CloseButton
             // 
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(172, 76);
+            this.CloseButton.Location = new System.Drawing.Point(172, 38);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
             this.CloseButton.TabIndex = 1;
@@ -59,33 +57,15 @@
             // 
             // AlphabetTextBox
             // 
-            this.AlphabetTextBox.Location = new System.Drawing.Point(56, 39);
+            this.AlphabetTextBox.Location = new System.Drawing.Point(56, 12);
             this.AlphabetTextBox.Name = "AlphabetTextBox";
             this.AlphabetTextBox.Size = new System.Drawing.Size(191, 20);
             this.AlphabetTextBox.TabIndex = 2;
             // 
-            // TypeComboBox
-            // 
-            this.TypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.TypeComboBox.FormattingEnabled = true;
-            this.TypeComboBox.Location = new System.Drawing.Point(56, 12);
-            this.TypeComboBox.Name = "TypeComboBox";
-            this.TypeComboBox.Size = new System.Drawing.Size(191, 21);
-            this.TypeComboBox.TabIndex = 3;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Típus";
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 42);
+            this.label2.Location = new System.Drawing.Point(12, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 5;
@@ -97,11 +77,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(259, 111);
+            this.ClientSize = new System.Drawing.Size(259, 71);
             this.ControlBox = false;
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.TypeComboBox);
             this.Controls.Add(this.AlphabetTextBox);
             this.Controls.Add(this.CloseButton);
             this.Controls.Add(this.CreateButton);
@@ -124,8 +102,6 @@
         private System.Windows.Forms.Button CreateButton;
         private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.TextBox AlphabetTextBox;
-        private System.Windows.Forms.ComboBox TypeComboBox;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
     }
 }

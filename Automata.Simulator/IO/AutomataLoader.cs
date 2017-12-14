@@ -9,8 +9,16 @@ namespace Automata.Simulator.IO
     using Drawing;
     using Interface;
 
+    /// <summary>
+    /// Helper class to load an automata.
+    /// </summary>
     public static class AutomataLoader
     {
+        /// <summary>
+        /// Loads an automata from the given path.
+        /// </summary>
+        /// <param name="path">THe file path.</param>
+        /// <returns>The new automata's graph representation.</returns>
         public static AutomataGraph Load(string path)
         {
             using (var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))

@@ -15,23 +15,49 @@ namespace Automata.Simulator.Form
     using Drawing;
     using Interface;
 
+    /// <summary>
+    /// Defines a form to manually resolve ambiguous transitions.
+    /// </summary>
     public partial class TransitionResolverForm : WinForm
     {
         #region Fields
+        /// <summary>
+        /// Field to store the combobox's items map.
+        /// </summary>
         private IList<IStateTransition> _comboBoxSelectionList = new List<IStateTransition>();
         #endregion
 
         #region Properties
-        public IAutomata Automata { get; }
+        /// <summary>
+        /// The current simulation's automata.
+        /// </summary>
+        public IAutomata Automata
+        {
+            get
+            {
+                return Simulation.Automata;
+            }
+        }
+
+        /// <summary>
+        /// The current simulation.
+        /// </summary>
         public ISimulation Simulation { get; }
+
+        /// <summary>
+        /// The resolved transition.
+        /// </summary>
         public IStateTransition SelectedTransition { get; private set; }
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates a new resolver form.
+        /// </summary>
+        /// <param name="simulation"></param>
         public TransitionResolverForm(ISimulation simulation)
         {
-            Simulation = simulation;
-            Automata = Simulation.Automata;
+            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation), "The simulation can not be null!");
 
             InitializeComponent();
 
@@ -40,16 +66,31 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Control event handlers
+        /// <summary>
+        /// Handles the draw panel's paint event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DrawPanel_Paint(object sender, PaintEventArgs e)
         {
             DrawPreviewAutomata();
         }
 
+        /// <summary>
+        /// Handles the transition combobox's change event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void TransitionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DrawPreviewAutomata();
         }
 
+        /// <summary>
+        /// Handles the select button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void SelectTransitionButton_Click(object sender, EventArgs e)
         {
             if (_comboBoxSelectionList.Count <= TransitionComboBox.SelectedIndex)
@@ -63,6 +104,9 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Sets up the transition combobox's items.
+        /// </summary>
         private void SetupTransitionComboBox()
         {
             _comboBoxSelectionList.Clear();
@@ -84,6 +128,9 @@ namespace Automata.Simulator.Form
                 TransitionComboBox.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// Draws the preview automata based on the form fields' value.
+        /// </summary>
         private void DrawPreviewAutomata()
         {
             if (WindowState == FormWindowState.Minimized)

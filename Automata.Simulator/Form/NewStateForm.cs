@@ -21,9 +21,9 @@ namespace Automata.Simulator.Form
         #region Constructors
         public NewStateForm(IAutomata automata)
         {
-            InitializeComponent();
+            Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
 
-            Automata = automata;
+            InitializeComponent();
 
             if (Automata.GetStartState() != null)
                 StartStateWarningLabel.Visible = true;

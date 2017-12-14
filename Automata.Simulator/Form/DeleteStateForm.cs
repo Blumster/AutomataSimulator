@@ -14,16 +14,26 @@ namespace Automata.Simulator.Form
     using Drawing;
     using Interface;
 
+    /// <summary>
+    /// Defines a form for deleting states from an automata.
+    /// </summary>
     public partial class DeleteStateForm : WinForm
     {
         #region Properties
+        /// <summary>
+        /// The automata that is operated upon.
+        /// </summary>
         public IAutomata Automata { get; }
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates a new delete state form for the given automata.
+        /// </summary>
+        /// <param name="automata">The automata.</param>
         public DeleteStateForm(IAutomata automata)
         {
-            Automata = automata;
+            Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
 
             InitializeComponent();
 
@@ -37,16 +47,31 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Control event handlers
+        /// <summary>
+        /// Handles the draw panel's paint event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DrawPanel_Paint(object sender, PaintEventArgs e)
         {
             DrawPreviewAutomata();
         }
 
+        /// <summary>
+        /// Handles the state combobox's change event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DeleteStateComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DrawPreviewAutomata();
         }
 
+        /// <summary>
+        /// Handles the delete state button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DeleteStateButton_Click(object sender, EventArgs e)
         {
             var selectedStateId = DeleteStateComboBox.SelectedItem as string;
@@ -63,6 +88,11 @@ namespace Automata.Simulator.Form
             Close();
         }
 
+        /// <summary>
+        /// Handles the cancel button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void CancelDeletionButton_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
@@ -71,6 +101,9 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Draws the modified automata based on the form fields' value.
+        /// </summary>
         private void DrawPreviewAutomata()
         {
             if (WindowState == FormWindowState.Minimized)

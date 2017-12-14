@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Automata.Simulator.IO
 {
     using Interface;
 
+    /// <summary>
+    /// Helper class to save an automata
+    /// </summary>
     public static class AutomataSaver
     {
+        /// <summary>
+        /// Saves the automata to the given file.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <param name="automata">The automata to be saved.</param>
+        /// <returns>True, if saving the automata was successful.</returns>
         public static bool Save(string path, IAutomata automata)
         {
             using (var outputFileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))

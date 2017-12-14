@@ -32,9 +32,13 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates a new delete transition form for the given automata.
+        /// </summary>
+        /// <param name="automata"></param>
         public DeleteTransitionForm(IAutomata automata)
         {
-            Automata = automata;
+            Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
 
             InitializeComponent();
 
@@ -48,6 +52,11 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Control event handlers
+        /// <summary>
+        /// Handles the source state combobox's change event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void SourceStateIdComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetupTransitionComboBox();
@@ -55,16 +64,31 @@ namespace Automata.Simulator.Form
             DrawPreviewAutomata();
         }
 
+        /// <summary>
+        /// Handles the draw panel's paint event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DrawPanel_Paint(object sender, PaintEventArgs e)
         {
             DrawPreviewAutomata();
         }
 
+        /// <summary>
+        /// Handles the transition combobox's change event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void TransitionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             DrawPreviewAutomata();
         }
 
+        /// <summary>
+        /// Handles the delete transition button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void DeleteTransitionButton_Click(object sender, EventArgs e)
         {
             if (_comboBoxSelectionList.Count <= TransitionComboBox.SelectedIndex)
@@ -76,6 +100,11 @@ namespace Automata.Simulator.Form
             Close();
         }
 
+        /// <summary>
+        /// Handles the cancel button's click event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
         private void CancelDeletionButton_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
@@ -84,6 +113,9 @@ namespace Automata.Simulator.Form
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Fills the transition combobox with the available transitions to the selected state.
+        /// </summary>
         private void SetupTransitionComboBox()
         {
             _comboBoxSelectionList.Clear();
@@ -105,6 +137,9 @@ namespace Automata.Simulator.Form
                 TransitionComboBox.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// Draws the modified automata based on the form fields' value.
+        /// </summary>
         private void DrawPreviewAutomata()
         {
             if (WindowState == FormWindowState.Minimized)
@@ -148,7 +183,5 @@ namespace Automata.Simulator.Form
             }
         }
         #endregion
-
-        
     }
 }

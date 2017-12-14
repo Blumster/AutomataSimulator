@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using WinForm = System.Windows.Forms.Form;
@@ -27,7 +23,7 @@ namespace Automata.Simulator.Form
 
         public NewTransitionForm(IAutomata automata)
         {
-            Automata = automata;
+            Automata = automata ?? throw new ArgumentNullException(nameof(automata), "The automata can not be null!");
 
             InitializeComponent();
 

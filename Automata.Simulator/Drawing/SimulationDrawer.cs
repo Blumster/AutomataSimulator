@@ -35,6 +35,13 @@ namespace Automata.Simulator.Drawing
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Draws the simulation bar to the graphic surface.
+        /// </summary>
+        /// <param name="graphics">The graphic surface.</param>
+        /// <param name="left">The left parameter to draw from.</param>
+        /// <param name="top">The top parameter to draw from.</param>
+        /// <param name="width">The width of the drawable surface.</param>
         public void DrawSimulationData(Graphics graphics, int left, int top, int width)
         {
             if (Graph.Simulation == null)
