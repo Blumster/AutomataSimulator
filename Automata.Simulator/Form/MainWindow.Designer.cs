@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.ManageGroupBox = new System.Windows.Forms.GroupBox();
             this.NewButton = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
@@ -41,6 +42,7 @@
             this.DeleteStateButton = new System.Windows.Forms.Button();
             this.NewTransitionButton = new System.Windows.Forms.Button();
             this.SimulationGroupBox = new System.Windows.Forms.GroupBox();
+            this.SimulationResultLabel = new System.Windows.Forms.Label();
             this.AmbiguityMethodLabel = new System.Windows.Forms.Label();
             this.AmbiguityResolverComboBox = new System.Windows.Forms.ComboBox();
             this.SimulationSpeedLabel = new System.Windows.Forms.Label();
@@ -60,7 +62,7 @@
             this.StateCountLabel = new System.Windows.Forms.Label();
             this.StateCountDescriptionLabel = new System.Windows.Forms.Label();
             this.TransitionCountDescriptionLabel = new System.Windows.Forms.Label();
-            this.SimulationResultLabel = new System.Windows.Forms.Label();
+            this.TimedStepTimer = new System.Windows.Forms.Timer(this.components);
             this.ManageGroupBox.SuspendLayout();
             this.EditGroupBox.SuspendLayout();
             this.SimulationGroupBox.SuspendLayout();
@@ -206,6 +208,17 @@
             this.SimulationGroupBox.TabIndex = 4;
             this.SimulationGroupBox.TabStop = false;
             this.SimulationGroupBox.Text = "Szimuláció";
+            // 
+            // SimulationResultLabel
+            // 
+            this.SimulationResultLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.SimulationResultLabel.ForeColor = System.Drawing.Color.Green;
+            this.SimulationResultLabel.Location = new System.Drawing.Point(6, 238);
+            this.SimulationResultLabel.Name = "SimulationResultLabel";
+            this.SimulationResultLabel.Size = new System.Drawing.Size(182, 44);
+            this.SimulationResultLabel.TabIndex = 11;
+            this.SimulationResultLabel.Text = "Az automata elfogadta a szót.";
+            this.SimulationResultLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // AmbiguityMethodLabel
             // 
@@ -394,16 +407,9 @@
             this.TransitionCountDescriptionLabel.TabIndex = 0;
             this.TransitionCountDescriptionLabel.Text = "Átmenetek száma:";
             // 
-            // SimulationResultLabel
+            // TimedStepTimer
             // 
-            this.SimulationResultLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.SimulationResultLabel.ForeColor = System.Drawing.Color.Green;
-            this.SimulationResultLabel.Location = new System.Drawing.Point(6, 238);
-            this.SimulationResultLabel.Name = "SimulationResultLabel";
-            this.SimulationResultLabel.Size = new System.Drawing.Size(182, 44);
-            this.SimulationResultLabel.TabIndex = 11;
-            this.SimulationResultLabel.Text = "Az automata elfogadta a szót.";
-            this.SimulationResultLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.TimedStepTimer.Tick += new System.EventHandler(this.TimedStepTimer_Tick);
             // 
             // MainWindow
             // 
@@ -466,6 +472,7 @@
         private System.Windows.Forms.ComboBox AmbiguityResolverComboBox;
         private System.Windows.Forms.Label AmbiguityMethodLabel;
         private System.Windows.Forms.Label SimulationResultLabel;
+        private System.Windows.Forms.Timer TimedStepTimer;
     }
 }
 

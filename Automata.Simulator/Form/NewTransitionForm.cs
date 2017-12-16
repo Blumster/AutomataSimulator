@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
@@ -68,9 +69,16 @@ namespace Automata.Simulator.Form
                 return;
 
             var symbols = new HashSet<char>();
-            symbols.UnionWith(InputSymbolsFieldTextBox.Text.Replace(" ", ""));
+            symbols.UnionWith(InputSymbolsFieldTextBox.Text.Replace(" ", "").Where(c => Automata.Alphabet.ContainsSymbol(c)));
 
-            Automata.CreateTransition(sourceState.Id, targetState.Id, symbols.Where(a => Automata.Alphabet.ContainsSymbol(a)).Select(s => s as object).ToArray());
+            if (symbols.Count == 0)
+            {
+                ErrorLabel.ForeColor = Color.Red;
+                ErrorLabel.Text = "Legalább egy helyes bemeneti szimbólumot meg kell adni!";
+                return;
+            }
+
+            Automata.CreateTransition(sourceState.Id, targetState.Id, symbols.Select(s => s as object).ToArray());
 
             DialogResult = DialogResult.OK;
             Close();

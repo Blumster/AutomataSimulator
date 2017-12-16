@@ -43,11 +43,6 @@ namespace Automata.Simulator.Drawing
         private bool _registerEvents = false;
 
         /// <summary>
-        /// The timer for timed stepping.
-        /// </summary>
-        private Timer _stepTimer = null;
-
-        /// <summary>
         /// The automata to be drawn.
         /// </summary>
         private IAutomata _automata;
@@ -263,9 +258,8 @@ namespace Automata.Simulator.Drawing
         /// </summary>
         /// <param name="stepMethod">The simulation step method.</param>
         /// <param name="input">The input symbols array.</param>
-        /// <param name="timedDelaySeconds">The delay of the timer in seconds.</param>
         /// <param name="resolver">The ambiguity resolver instance.</param>
-        public void StartSimulation(SimulationStepMethod stepMethod, object[] input, int timedDelaySeconds, IAmbiguityResolver resolver = null)
+        public void StartSimulation(SimulationStepMethod stepMethod, object[] input, IAmbiguityResolver resolver = null)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input), "The input symbols array can not be null!");
@@ -287,6 +281,7 @@ namespace Automata.Simulator.Drawing
             switch (stepMethod)
             {
                 case SimulationStepMethod.Manual:
+                case SimulationStepMethod.Timed:
                     Simulation.OnStep += OnSimulationStep;
                     break;
 
@@ -295,37 +290,9 @@ namespace Automata.Simulator.Drawing
 
                     OnSimulationFinished?.Invoke();
                     break;
-
-                case SimulationStepMethod.Timed:
-                    Simulation.OnStep += OnSimulationStep;
-
-                    _stepTimer = new Timer(timedDelaySeconds * 1000)
-                    {
-                        AutoReset = true
-                    };
-                    _stepTimer.Elapsed += StepTimer_Elapsed;
-                    _stepTimer.Start();
-                    break;
             }
 
             ColorizeCurrentStateAndEdges();
-        }
-
-        /// <summary>
-        /// Handles the timer's elapsed event.
-        /// </summary>
-        /// <param name="sender">The triggerer object.</param>
-        /// <param name="e">The event arguments.</param>
-        private void StepTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            if (StepSimulation() != SimulationStepResult.Success)
-            {
-                if (_stepTimer != null)
-                {
-                    _stepTimer.Stop();
-                    _stepTimer = null;
-                }
-            }
         }
 
         /// <summary>
@@ -338,12 +305,6 @@ namespace Automata.Simulator.Drawing
 
             Simulation.OnStep -= OnSimulationStep;
             Simulation = null;
-
-            if (_stepTimer != null)
-            {
-                _stepTimer.Stop();
-                _stepTimer = null;
-            }
 
             ClearColors();
 

@@ -261,8 +261,16 @@ namespace Automata.Simulator.Form
                 else if (RandomResolver.Equals(AmbiguityResolverComboBox.SelectedItem))
                     resolver = new RandomResolver();
 
+                var stepMethod = GetStepMethod();
+
                 Graph.OnSimulationFinished += OnSimulationFinished;
-                Graph.StartSimulation(GetStepType(), simulationSettingsForm.GetInputArray(), SimulationSpeedTrackBar.Value, resolver);
+                Graph.StartSimulation(stepMethod, simulationSettingsForm.GetInputArray(), resolver);
+
+                if (stepMethod == SimulationStepMethod.Timed)
+                {
+                    TimedStepTimer.Interval = SimulationSpeedTrackBar.Value * 1000;
+                    TimedStepTimer.Start();
+                }
             }
 
             SetupUI();
@@ -310,6 +318,20 @@ namespace Automata.Simulator.Form
         private void SimulationSpeedTrackBar_Scroll(object sender, EventArgs e)
         {
             SimulationSpeedLabel.Text = SimulationSpeedTrackBar.Value.ToString();
+        }
+
+        /// <summary>
+        /// Handles the timed step timer's tick event.
+        /// </summary>
+        /// <param name="sender">The triggerer object.</param>
+        /// <param name="e">The event arguments.</param>
+        private void TimedStepTimer_Tick(object sender, EventArgs e)
+        {
+            var result = Graph.StepSimulation();
+            if (result == SimulationStepResult.Success)
+                return;
+
+            TimedStepTimer.Stop();
         }
         #endregion
         #endregion
@@ -389,7 +411,7 @@ namespace Automata.Simulator.Form
                 StopSimulationButton.Enabled = true;
                 SimulationStepMethodComboBox.Enabled = false;
                 SimulationSpeedTrackBar.Enabled = false;
-                SimulationStepButton.Enabled = GetStepType() == SimulationStepMethod.Manual;
+                SimulationStepButton.Enabled = GetStepMethod() == SimulationStepMethod.Manual;
                 AmbiguityResolverComboBox.Enabled = false;
 
                 if (Graph.Simulation.IsFinished)
@@ -496,7 +518,7 @@ namespace Automata.Simulator.Form
         /// Determines the step method based on the selected item from the step method combobox.
         /// </summary>
         /// <returns></returns>
-        private SimulationStepMethod GetStepType()
+        private SimulationStepMethod GetStepMethod()
         {
             if (Instant.Equals(SimulationStepMethodComboBox.SelectedItem))
                 return SimulationStepMethod.Instant;
