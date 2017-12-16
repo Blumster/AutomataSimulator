@@ -1,11 +1,9 @@
-﻿using System.Xml;
-
-namespace Automata.Interface
+﻿namespace Automata.Interface
 {
     /// <summary>
     /// Defines an interface for a transition implementation.
     /// </summary>
-    public interface IStateTransition
+    public interface IStateTransition : IXmlObject
     {
         #region Properties
         /// <summary>
@@ -41,20 +39,6 @@ namespace Automata.Interface
         /// <param name="symbol">The symbolt to check.</param>
         /// <returns>True, if the transition handles the symbol.</returns>
         bool HandlesSymbol(object symbol);
-        #endregion
-
-        #region IO
-        /// <summary>
-        /// This method is called to attach extra data to the XML element of this entity.
-        /// </summary>
-        /// <param name="writer">The current XML writer instance.</param>
-        void WriteToXmlWriter(XmlWriter writer);
-
-        /// <summary>
-        /// This method is called to read extra data from the XML element of this entity.
-        /// </summary>
-        /// <param name="reader">The current XML reader instance.</param>
-        void ReadFromXmlReader(XmlReader reader);
         #endregion
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Xml;
 
 namespace Automata.Interface
 {
     /// <summary>
     /// Defines an interface for an alphabet implementation.
     /// </summary>
-    public interface IAlphabet
+    public interface IAlphabet : IXmlObject
     {
         /// <summary>
         /// Returns the iterateable list of symbols contained in this alphabet.
@@ -35,19 +34,5 @@ namespace Automata.Interface
         /// <param name="list">If true, the output will be comma separated.</param>
         /// <returns>The textual representation of the given symbols.</returns>
         string ConstructSymbolText(IEnumerable<object> symbols, bool list = true);
-
-        #region IO
-        /// <summary>
-        /// This method is called to attach extra data to the XML element of this entity.
-        /// </summary>
-        /// <param name="writer">The current XML writer instance.</param>
-        void WriteToXmlWriter(XmlWriter writer);
-
-        /// <summary>
-        /// This method is called to read extra data from the XML element of this entity.
-        /// </summary>
-        /// <param name="reader">The current XML reader instance.</param>
-        void ReadFromXmlReader(XmlReader reader);
-        #endregion
     }
 }

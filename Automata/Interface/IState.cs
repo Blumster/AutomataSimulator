@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Xml;
 
 namespace Automata.Interface
 {
     /// <summary>
     /// Defines an interface for a state implementation.
     /// </summary>
-    public interface IState
+    public interface IState : IXmlObject
     {
         #region Properties
         /// <summary>
@@ -43,20 +42,6 @@ namespace Automata.Interface
         /// The list of outgoing transitions
         /// </summary>
         IEnumerable<IStateTransition> OutTransitions { get; }
-        #endregion
-
-        #region IO
-        /// <summary>
-        /// This method is called to attach extra data to the XML element of this entity.
-        /// </summary>
-        /// <param name="writer">The current XML writer instance.</param>
-        void WriteToXmlWriter(XmlWriter writer);
-
-        /// <summary>
-        /// This method is called to read extra data from the XML element of this entity.
-        /// </summary>
-        /// <param name="reader">The current XML reader instance.</param>
-        void ReadFromXmlReader(XmlReader reader);
         #endregion
     }
 }

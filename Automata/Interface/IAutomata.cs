@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Xml;
 
 namespace Automata.Interface
 {
@@ -9,7 +8,7 @@ namespace Automata.Interface
     /// <summary>
     /// Defines an interface for an automata implementation.
     /// </summary>
-    public interface IAutomata
+    public interface IAutomata : IXmlObject
     {
         #region Properties
         /// <summary>
@@ -175,20 +174,6 @@ namespace Automata.Interface
         /// <param name="symbols">The array of symbols this transitions transitions on.</param>
         /// <returns>The new transition.</returns>
         IStateTransition InstantiateTransition(string sourceId, string targetId, object[] symbols);
-        #endregion
-
-        #region IO
-        /// <summary>
-        /// This method is called to attach extra data to the XML element of this entity.
-        /// </summary>
-        /// <param name="writer">The current XML writer instance.</param>
-        void WriteToXmlWriter(XmlWriter writer);
-
-        /// <summary>
-        /// This method is called to read extra data from the XML element of this entity.
-        /// </summary>
-        /// <param name="reader">The current XML reader instance.</param>
-        void ReadFromXmlReader(XmlReader reader);
         #endregion
     }
 }

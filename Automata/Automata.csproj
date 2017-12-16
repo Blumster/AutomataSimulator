@@ -54,6 +54,7 @@
     <Compile Include="Interface\IAutomata.cs" />
     <Compile Include="Interface\ISimulation.cs" />
     <Compile Include="Interface\IStateTransition.cs" />
+    <Compile Include="Interface\IXmlObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interface\IState.cs" />
     <Compile Include="Simulation\SimpleSimulation.cs" />
