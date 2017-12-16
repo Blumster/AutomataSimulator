@@ -42,7 +42,8 @@ namespace Automata.Simulator.Form
             foreach (var state in Automata.States)
                 DeleteStateComboBox.Items.Add(state.Id);
 
-            DeleteStateComboBox.SelectedIndex = 0;
+            if (DeleteStateComboBox.Items.Count > 0)
+                DeleteStateComboBox.SelectedIndex = 0;
         }
         #endregion
 
@@ -74,6 +75,9 @@ namespace Automata.Simulator.Form
         /// <param name="e">The event arguments.</param>
         private void DeleteStateButton_Click(object sender, EventArgs e)
         {
+            if (DeleteStateComboBox.Items.Count == 0)
+                return;
+
             var selectedStateId = DeleteStateComboBox.SelectedItem as string;
             if (String.IsNullOrWhiteSpace(selectedStateId))
                 return;

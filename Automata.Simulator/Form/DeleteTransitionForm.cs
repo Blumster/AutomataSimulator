@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using WinForm = System.Windows.Forms.Form;
@@ -21,13 +15,22 @@ namespace Automata.Simulator.Form
     using Drawing;
     using Interface;
 
+    /// <summary>
+    /// Defines a form for deleting transitions from an automata.
+    /// </summary>
     public partial class DeleteTransitionForm : WinForm
     {
         #region Fields
+        /// <summary>
+        /// The lookup list of the transitions for the selected state.
+        /// </summary>
         private IList<IStateTransition> _comboBoxSelectionList = new List<IStateTransition>();
         #endregion
 
         #region Properties
+        /// <summary>
+        /// The automata that is operated upon.
+        /// </summary>
         public IAutomata Automata { get; }
         #endregion
 
@@ -45,7 +48,8 @@ namespace Automata.Simulator.Form
             foreach (var state in Automata.States)
                 SourceStateIdComboBox.Items.Add(state.Id);
 
-            SourceStateIdComboBox.SelectedIndex = 0;
+            if (SourceStateIdComboBox.Items.Count > 0)
+                SourceStateIdComboBox.SelectedIndex = 0;
 
             SetupTransitionComboBox();
         }
@@ -91,7 +95,7 @@ namespace Automata.Simulator.Form
         /// <param name="e">The event arguments.</param>
         private void DeleteTransitionButton_Click(object sender, EventArgs e)
         {
-            if (_comboBoxSelectionList.Count <= TransitionComboBox.SelectedIndex)
+            if (TransitionComboBox.Items.Count == 0 || _comboBoxSelectionList.Count <= TransitionComboBox.SelectedIndex)
                 return;
 
             Automata.RemoveTrasition(_comboBoxSelectionList[TransitionComboBox.SelectedIndex]);

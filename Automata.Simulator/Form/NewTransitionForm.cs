@@ -34,8 +34,11 @@ namespace Automata.Simulator.Form
                 TargetStateIdComboBox.Items.Add(state.Id);
             }
 
-            SourceStateIdComboBox.SelectedIndex = 0;
-            TargetStateIdComboBox.SelectedIndex = 0;
+            if (Automata.States.Count > 0)
+            {
+                SourceStateIdComboBox.SelectedIndex = 0;
+                TargetStateIdComboBox.SelectedIndex = 0;
+            }
 
             AvailableInputSymbolsLabel.Text = Automata.Alphabet.ConstructSymbolText();
         }
@@ -62,6 +65,9 @@ namespace Automata.Simulator.Form
 
         private void CreateTransitionButton_Click(object sender, EventArgs e)
         {
+            if (SourceStateIdComboBox.Items.Count == 0 || TargetStateIdComboBox.Items.Count == 0)
+                return;
+
             var sourceState = Automata.GetState(SourceStateIdComboBox.SelectedItem as string);
             var targetState = Automata.GetState(TargetStateIdComboBox.SelectedItem as string);
 
