@@ -14,11 +14,6 @@ namespace Automata.Simulator.Form
     /// </summary>
     public partial class CreateAutomataForm : WinForm
     {
-        #region Consts
-        private const string FiniteAutomata = "Véges Automata";
-        private const string PushdownAutomata = "Veremautomata";
-        #endregion
-
         #region Constructors
         /// <summary>
         /// Creates a new create automata form.
