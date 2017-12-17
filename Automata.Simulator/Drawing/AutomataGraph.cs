@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Linq;
 using System.Reflection;
 
 using Microsoft.Msagl.Core.Geometry.Curves;
@@ -321,7 +322,13 @@ namespace Automata.Simulator.Drawing
 
             var result = Simulation.Step();
             if (result == SimulationStepResult.Ambiguous)
-                result = Simulation.SpecificStep(Simulation.Resolver.Resolve(Simulation));
+            {
+                var resolvedTransition = Simulation.Resolver.Resolve(Simulation);
+                if (resolvedTransition != null)
+                    result = Simulation.SpecificStep(resolvedTransition);
+                else if (Simulation.GetApplicableTransitions().Count() >= 1)
+                    return SimulationStepResult.Success;
+            }
 
             ClearColors();
 

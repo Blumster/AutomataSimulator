@@ -108,6 +108,7 @@ namespace Automata.Simulator.Form
                 {
                     Graph = new AutomataGraph(form.CreateAutomata(), true);
                     Graph.OnRedraw += DrawGraph;
+                    Graph.IsSaved = false;
 
                     SetupUI();
 
@@ -145,6 +146,7 @@ namespace Automata.Simulator.Form
                 }
 
                 Graph.OnRedraw += DrawGraph;
+                Graph.IsSaved = true;
 
                 SetupUI();
 
@@ -177,6 +179,8 @@ namespace Automata.Simulator.Form
                 if (result == DialogResult.Cancel)
                     return;
 
+                Graph.IsSaved = false;
+
                 DrawGraph();
             }
 
@@ -195,6 +199,8 @@ namespace Automata.Simulator.Form
                 var result = newTransitionForm.ShowDialog();
                 if (result == DialogResult.Cancel)
                     return;
+
+                Graph.IsSaved = false;
 
                 DrawGraph();
             }
@@ -215,6 +221,8 @@ namespace Automata.Simulator.Form
                 if (result == DialogResult.Cancel)
                     return;
 
+                Graph.IsSaved = false;
+
                 DrawGraph();
             }
 
@@ -233,6 +241,8 @@ namespace Automata.Simulator.Form
                 var result = deleteTransitionForm.ShowDialog();
                 if (result == DialogResult.Cancel)
                     return;
+
+                Graph.IsSaved = false;
 
                 DrawGraph();
             }
